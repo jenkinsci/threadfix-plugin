@@ -1,0 +1,3 @@
+#Wed Oct 09 10:45:51 PDT 2013
+url=\ Repository URL that artifacts were deployed.\n
+getResult=\ Result of the deployment. During the build, this value is null.\n
