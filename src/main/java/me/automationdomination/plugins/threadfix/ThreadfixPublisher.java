@@ -1,14 +1,30 @@
 package me.automationdomination.plugins.threadfix;
 
+import java.io.*;
+import java.lang.reflect.InvocationTargetException;
+import java.util.*;
+import hudson.*;
+import hudson.scm.ChangeLogSet;
+import hudson.scm.ChangeLogSet.AffectedFile;
+import hudson.scm.ChangeLogSet.Entry;
+import hudson.tasks.*;
+import hudson.util.FormValidation;
+import hudson.model.*;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Recorder;
+import net.sf.json.JSONObject;
+import hudson.tasks.BuildStep;
 import hudson.Extension;
 import hudson.model.Describable;
 import hudson.model.Descriptor;
 import hudson.model.Hudson;
+import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerResponse;
+import org.apache.commons.beanutils.MethodUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
 
-import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
  * Created with IntelliJ IDEA.
@@ -35,7 +51,7 @@ public class ThreadfixPublisher extends Recorder {
 
     }
 
-    public String getFpr() {
+    public String getScan() {
         return scan;
     }
 
@@ -43,14 +59,21 @@ public class ThreadfixPublisher extends Recorder {
         return searchCondition;
     }
 
-    public Long getF360projId() {
+    public Long getAppId() {
         return appId;
     }
 
-    public String token() {
+    public String getToken() {
         return token;
     }
 
+    public Integer getUploadWaitTime() {
+        return uploadWaitTime;
+    }
+
+    public String getAuditScript() {
+        return auditScript;
+    }
     public BuildStepMonitor getRequiredMonitorService() {
         return BuildStepMonitor.NONE;
     }
@@ -59,4 +82,5 @@ public class ThreadfixPublisher extends Recorder {
     public Action getProjectAction(AbstractProject<?,?> project) {
         return new ChartAction(project);
     }
+
 }
