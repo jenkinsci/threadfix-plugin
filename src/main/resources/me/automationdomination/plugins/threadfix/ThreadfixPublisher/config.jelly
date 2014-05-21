@@ -1,0 +1,33 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+  <f:entry title="Scan File" field="scan" help="/plugin/threadfix/help-scan.html">
+    <f:textbox field="scan" />
+  </f:entry>
+  <f:entry title="ThreadFix Server Application Id" field="AppId" help="/plugin/threadfix/help-AppId.html">
+    <j:choose>
+      <j:when test="${descriptor.AppList != null}">
+		<script type="text/javascript" src="${rootURL}/plugin/threadfix/refresh-threadfix-projects.js"/>
+        <select id="appId" name="appId">
+          <j:forEach var="s" items="${descriptor.AppList}">
+            <f:option value="${s.id}" selected="${instance.AppId == s.id}">${s.name}</f:option>
+          </j:forEach>
+        </select>
+        <div style="float:right">
+          <input type="button" value="Refresh" class="yui-button" onclick="refreshTFButton('${rootURL}/descriptor/${descriptor.clazz.name}/refreshProjects','appId',this)" />
+        </div>
+        <div style="display:none;">
+          <img src="${imagesURL}/spinner.gif" /> ${progress}
+        </div>
+        <div><!-- this is where the error message goes --></div>
+        </j:when>
+<j:otherwise>
+<f:textbox field="appId" />
+</j:otherwise>
+        </j:choose>
+        </f:entry>
+<f:advanced title="Auto Job Assignment">
+<f:entry title="API Token" field="token" help="/plugin/threadfix/help-token.html">
+    <f:textbox field="token" />
+</f:entry>
+</f:advanced>
+</j:jelly>
+

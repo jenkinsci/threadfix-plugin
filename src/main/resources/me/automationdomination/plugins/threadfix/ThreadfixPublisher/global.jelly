@@ -1,0 +1,23 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+    <f:section title="ThreadFix Server">
+        <f:entry title="URL"
+                 description="ThreadFix Server URL"
+                 help="/plugin/threadfix/help-url.html">
+            <f:textbox name="url" field="url" />
+        </f:entry>
+        <f:entry title="Token"
+                 description="ThreadFix Server API Upload Token"
+                 help="/plugin/threadfix/help-token.html">
+            <f:textbox name="token" field="token" />
+        </f:entry>
+        <f:advanced title="ThreadFix Client JAR">
+            <f:entry title="JARs Path"
+                     description="Absolute Path of the TFCLI jar"
+                     help="/plugin/threadfix/help-tfcli.html">
+                <f:textbox name="jarsPath" field="jarsPath" />
+            </f:entry>
+            <f:validateButton title="Test Connection"
+                     progress="Testing..." method="testConnection" with="url,token,jarsPath" />
+        </f:advanced>
+    </f:section>
+</j:jelly>
