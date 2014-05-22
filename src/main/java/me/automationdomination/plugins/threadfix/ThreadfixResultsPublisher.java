@@ -20,7 +20,7 @@ public class ThreadfixResultsPublisher extends Recorder {
     // Fields in config.jelly must match the parameter names in the "DataBoundConstructor"
     //public static class DescriptorImpl extends BuildStepDescriptor<Publisher> {
     @DataBoundConstructor
-    public ThreadfixResultsPublisher(String scan, String searchCondition, Long appId, String token) {
+    public ThreadfixResultsPublisher(String scan, Long appId) {
 
         this.scan = scan;
         this.appId = appId;
