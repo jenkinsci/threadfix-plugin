@@ -1,7 +1,7 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
     <f:section title="ThreadFix Server">
         <f:entry title="URL"
-                 description="ThreadFix Server URL"
+                 description="ThreadFix RESTful URL"
                  help="/plugin/threadfix/help-url.html">
             <f:textbox name="url" field="url" />
         </f:entry>
