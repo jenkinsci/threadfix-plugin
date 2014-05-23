@@ -1,2 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<l:dependencies xmlns:l='licenses' groupId='me.automationdomination.plugins' artifactId='threadfix' version='1.0-SNAPSHOT'><l:dependency name='threadfix' groupId='me.automationdomination.plugins' artifactId='threadfix' version='1.0-SNAPSHOT' url='http://jenkins-ci.org/plugin/threadfix/'><l:description/></l:dependency></l:dependencies>

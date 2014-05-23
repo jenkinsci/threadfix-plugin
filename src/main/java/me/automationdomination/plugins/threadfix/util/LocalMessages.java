@@ -15,7 +15,7 @@ public enum LocalMessages {
 
     PROJECTACTION_DISPLAYNAME("ThreadfixProjectAction.DisplayName"),
     BUILDACTION_DISPLAYNAME("ThreadfixBuildAction.DisplayName"),
-    PUBLISHER_DISPLAYNAME("ThreadfixResultsPublisher.DisplayName"),
+    PUBLISHER_DISPLAYNAME("ThreadfixPublisher.DisplayName"),
     REPORT_DISPLAYNAME("ThreadfixReport.DisplayName");
 
     private final static ResourceBundle MESSAGES = ResourceBundle.getBundle("me.automationdomination.plugins.threadfix. Messages");
