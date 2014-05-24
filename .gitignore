@@ -1,9 +1,16 @@
+# IntelliJ files #
+##################
+.idea
+
 # Eclipse files #
 #################
 .classpath
 .project
-.settings/
-target/
+.settings
+
+# Maven files #
+###############
+target
 
 # Compiled source #
 ###################

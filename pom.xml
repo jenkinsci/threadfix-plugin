@@ -8,14 +8,14 @@
 	<modelVersion>4.0.0</modelVersion>
 	
 	<parent>
+		<!-- which version of Jenkins is this plugin built against? -->
 		<groupId>org.jenkins-ci.plugins</groupId>
 		<artifactId>plugin</artifactId>
-		<!-- which version of Jenkins is this plugin built against? -->
 		<version>1.509.4</version>
 	</parent>
 
 	<groupId>me.automationdomination</groupId>
-	<artifactId>threadfix</artifactId>
+	<artifactId>threadfix-jenkins-plugin</artifactId>
 	<version>1.0-SNAPSHOT</version>
 	<packaging>hpi</packaging>
 
@@ -27,18 +27,18 @@
         </license>
     </licenses>
 
-    <developers>
-        <developer>
-            <id>automationdomination</id>
-            <name>Brandon Spruth</name>
-            <email>brandon@automationdomination.me</email>
-        </developer>
-
-        <developer>
-            <name>Chris Baek</name>
-            <email>christopher.baek@gmail.com</email>
-        </developer>
-    </developers>
+	<developers>
+		<developer>
+			<id>automationdomination</id>
+			<name>Brandon Spruth</name>
+			<email>brandon@automationdomination.me</email>
+		</developer>
+		<developer>
+			<name>Christopher Baek</name>
+			<email>christopher.baek@gmail.com</email>
+		</developer>
+	</developers>
+	
     <!--
     <scm>
         <connection>scm:git:ssh://github.com/automationdomination/threadfix-jenkins-plugin.git</connection>
@@ -46,6 +46,7 @@
         <url>https://github.com/automationdomination/threadfix-jenkins-plugin</url>
     </scm>
     -->
+    
     <!-- get every artifact through repo.jenkins-ci.org, which proxies all the artifacts that we need -->
     <repositories>
         <repository>
@@ -62,14 +63,11 @@
     </pluginRepositories>
 
     <properties>
-        <!--
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <compileSource>1.7</compileSource>
-        <compileTarget>1.7</compileTarget>
-        -->
         <jersey.client.version>1.16</jersey.client.version>
         <joda.time.version>2.1</joda.time.version>
     </properties>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -82,6 +80,7 @@
 			</plugin>
 		</plugins>
 	</build>
+	
     <dependencies>
         <dependency>
             <groupId>com.sun.jersey</groupId>
