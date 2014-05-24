@@ -1,0 +1,19 @@
+<j:jelly 
+  xmlns:j="jelly:core" 
+  xmlns:st="jelly:stapler" 
+  xmlns:d="jelly:define" 
+  xmlns:l="/lib/layout" 
+  xmlns:t="/lib/hudson" 
+  xmlns:f="/lib/form">
+  
+  <f:section title="Automation Domination Threadfix Plugin Configuration">
+    <f:entry title="URL" field="url" description="Threadfix Server URL">
+      <f:textbox name="url"/>
+    </f:entry>
+    
+    <f:entry title="API Token" field="apiToken" description="Threadfix Server API Token">
+      <f:textbox name="apiToken"/>
+    </f:entry>
+  </f:section>
+  
+</j:jelly>
