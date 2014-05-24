@@ -14,7 +14,7 @@
 
     <f:section title="Threadfix Server Configuration">
         <!-- TextfieldUrl -->
-        <f:entry title="RESTful URL" description="ThreadFix RESTful URL" field="url" help="/plugin/threadfix/help-url.html">
+        <f:entry title="RESTful URL" description="ThreadFix RESTful URL" field="url" help="help-url.html">
             <f:textbox name="url" default="http://localhost:8080/threadfix/rest"/>
         </f:entry>
 

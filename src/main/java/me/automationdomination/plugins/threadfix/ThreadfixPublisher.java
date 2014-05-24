@@ -123,12 +123,12 @@ public class ThreadfixPublisher extends Recorder {
          *      prevent the form from being saved. It just means that a message
          *      will be displayed to the user.
          */
-        public FormValidation doCheckName(@QueryParameter String value)
+        public FormValidation doCheckUrl(@QueryParameter String value)
                 throws IOException, ServletException {
             if (value.length() == 0)
-                return FormValidation.error("Please set a name");
-            if (value.length() < 4)
-                return FormValidation.warning("Isn't the name too short?");
+                return FormValidation.error("Please provide the URL of your Threadfix server");
+            if (value.length() < 7)
+                return FormValidation.warning("This is not a URL");
             return FormValidation.ok();
         }
 
@@ -140,7 +140,7 @@ public class ThreadfixPublisher extends Recorder {
          * This human readable name is used in the configuration screen.
          */
         public String getDisplayName() {
-            return "Threadfix Server Configuration";
+            return "Threadfix Scan to Threadfix";
         }
 
         @Override
