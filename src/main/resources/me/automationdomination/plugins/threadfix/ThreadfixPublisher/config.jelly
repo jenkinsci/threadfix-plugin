@@ -1,28 +1,18 @@
-<?xml version="1.0"?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
-  <st:once>
-    <script type="text/javascript" src="${rootURL}/plugin/threadfix/js/threadfixPlugin.js"/>
-  </st:once>
-  <!-- TextfieldUrl -->
-  <f:entry title="RESTful URL" description="ThreadFix RESTful URL" field="url" help="/plugin/threadfix/help-url.html">
-    <f:textbox name="url" default="http://localhost:8080/threadfix/rest"/>
-  </f:entry>
-  <!-- TextfieldToken -->
-  <f:entry title="API Key" description="ThreadFix Server API Key" field="token" help="/plugin/threadfix/help-token.html">
-    <f:textbox name="token" default="fch5qV5SVksAeJOsBb3W8YRAZP7EGK4BAetumVzNaX58"/>
-  </f:entry>
-  <!-- TextfieldTfcli -->
-  <f:entry title="TFCLI" description="ThreadFix Client JAR" field="tfcli" help="/plugin/threadfix/help-tfcli.html">
-    <f:textbox name="tfcli" default="/usr/bin/tfcli.jar"/>
-  </f:entry>
-  <!-- Some javascript -->
-  <f:entry>
-    <input type="button" value="Click here!" onClick="sayHi();"/>
-  </f:entry>
-  <f:entry title="Team ID" field="teamId">
-    <f:textbox/>
-  </f:entry>
-  <f:entry title="Project ID" field="projectId">
-    <f:textbox/>
-  </f:entry>
+
+    <st:once>
+        <script type="text/javascript" src="${rootURL}/plugin/threadfix/js/threadfixPlugin.js" />
+    </st:once>
+
+    <f:entry title="Application Name" field="useThreadfixAppName">
+        <f:dropdownList name="Application" title="Threadfix Application">
+            <f:dropdownListBlock title="soplanning" value="soplanning" staplerClass="A" />
+            <f:dropdownListBlock title="webgoat" value="webgoat" staplerClass="B" />
+        </f:dropdownList>
+    </f:entry>
+
+    <!-- Some javascript -->
+    <f:entry>
+        <input type="button" value="Click here!" onClick="sayHi();"/>
+    </f:entry>
 </j:jelly>
