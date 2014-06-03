@@ -27,5 +27,9 @@
         <f:entry title="TFCLI" description="ThreadFix Client JAR" field="tfcli" help="/plugin/threadfix/help-tfcli.html">
             <f:textbox name="tfcli" default="/usr/bin/tfcli.jar"/>
         </f:entry>
+        
+        <f:entry title="test" description="test" field="test" help="help-test.html">
+            <f:textbox name="test" default="test"/>
+        </f:entry>
     </f:section>
 </j:jelly>

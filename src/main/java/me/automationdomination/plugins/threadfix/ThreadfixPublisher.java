@@ -11,6 +11,7 @@ import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
 import hudson.util.FormValidation;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.PrintStream;
 
@@ -32,35 +33,23 @@ import org.kohsuke.stapler.StaplerRequest;
 @SuppressWarnings("unchecked")
 public class ThreadfixPublisher extends Recorder {
 
-    private final String token;
-    private final String url;
-    private final String tfcli;
+	@DataBoundConstructor
+	public ThreadfixPublisher() {
+
+	}
 
     // Fields in config.jelly must match the parameter names in the "DataBoundConstructor"
-    @DataBoundConstructor
-    public ThreadfixPublisher(
-    		final String token, 
-    		final String url, 
-    		final String tfcli) {
-        this.token = token;
-        this.url = url;
-        this.tfcli = tfcli;
-    }
+//    @DataBoundConstructor
+//    public ThreadfixPublisher(
+//    		final String token, 
+//    		final String url, 
+//    		final String tfcli) {
+////        this.token = token;
+////        this.url = url;
+////        this.tfcli = tfcli;
+//    }
 
-    /**
-     * We'll use this from the <tt>config.jelly</tt>.
-     */
-	public String getToken() {
-		return token;
-	}
 
-	public String getUrl() {
-		return url;
-	}
-
-	public String getTfcli() {
-		return tfcli;
-	}
 
     // required per jenkins recorder
     public BuildStepMonitor getRequiredMonitorService() {
@@ -80,28 +69,50 @@ public class ThreadfixPublisher extends Recorder {
 			final BuildListener listener) throws InterruptedException, IOException {
 		final PrintStream log = launcher.getListener().getLogger();
 		
-		listener.getLogger().println("beginning threadfix publisher execution");
+		log.println("beginning threadfix publisher execution");
 		
-		log.println("Publishing Scan Results");
-		log.println(
-				"Using" + "Token" + token + "URL" + url + "Threadfix CLI"
-						+ tfcli);
-		log.println(
-				"This is job number: " + build.getDisplayName());
 		
+		log.println("tfcli:" + getDescriptor().getTfcli());
+		log.println("url: " + getDescriptor().getUrl());
+		log.println("token: " + getDescriptor().getToken());
+		
+		//log.println("using url <" + url + ">");
+		//log.println("using token <" + token  + ">");
+		
+		
+		log.println("anything useful here?");
+		log.println("description: " + build.getDescription());
+		log.println("display name: " + build.getDisplayName());
+		log.println("full display name: " + build.getFullDisplayName());
+		log.println("id: " + build.getId());
+		log.println("number: " + build.getNumber());
+		
+		log.println("listing files in current working directory");
+    	final File currentWorkingDirectory = new File(".");
+    	log.println("cwd: " + currentWorkingDirectory.getAbsolutePath());
+    	final File[] fileList = currentWorkingDirectory.listFiles();
+    	for (final File file : fileList) {
+    		//if (file.isFile()) {
+    			log.println(file.getName());
+    			log.println(file.getAbsolutePath());
+    		//}
+    	}
+    	
+//    	log.println("listing files in workspace");
+//    	final File workspace = new File(System.getenv("WORKSPACE"));
+//    	final File[] workFileList = workspace.listFiles();
+//    	for (final File file : workFileList) {
+//    		if (file.isFile()) {
+//    			log.println(file.getName());
+//    			log.println(file.getAbsolutePath());
+//    		}
+//    	}
 		
 		// TODO: 05/29/2014 - merged from old class... still needs to be cleaned up nand
 //    	listener.getLogger().println("WORKSPACE: " + System.getenv("WORKSPACE"));
 //    	listener.getLogger().println("JOB_NAME: " + System.getenv("JOB_NAME"));
 //    	
-//    	final File currentWorkingDirectory = new File(".");
-//    	final File[] fileList = currentWorkingDirectory.listFiles();
-//    	for (final File file : fileList) {
-//    		if (file.isFile()) {
-//    			listener.getLogger().println(file.getName());
-//    			listener.getLogger().println(file.getAbsolutePath());
-//    		}
-//    	}
+
     	
 //		PrintStream log = launcher.getListener().getLogger();		
 //		log.println("Publishing Fortify 360 FPR Data");
@@ -229,6 +240,10 @@ public class ThreadfixPublisher extends Recorder {
          * If you don't want fields to be persisted, use <tt>transient</tt>.
          */
         private String useThreadfixAppName;
+        
+        private String token;
+        private String url;
+        private String tfcli;
 
         /**
          * In order to load the persisted global configuration, you have to
@@ -282,7 +297,14 @@ public class ThreadfixPublisher extends Recorder {
 			
             // To persist global configuration information,
             // set that to properties and call save().
-            useThreadfixAppName = formData.getString("useThreadfixAppName");
+        	
+        	// 06/02/2014: can't save configuration page if this is left uncommented...
+            //useThreadfixAppName = formData.getString("useThreadfixAppName");
+        	
+        	token = formData.getString("token");
+        	url = formData.getString("url");
+        	tfcli = formData.getString("tfcli");
+        	
             // ^Can also use req.bindJSON(this, formData);
             //  (easier when there are many fields; need set* methods for this, like setUseFrench)
             save();
@@ -298,6 +320,21 @@ public class ThreadfixPublisher extends Recorder {
         public String getUseThreadfixAppName() {
             return useThreadfixAppName;
         }
+        
+        /**
+         * We'll use this from the <tt>config.jelly</tt>.
+         */
+    	public String getToken() {
+    		return token;
+    	}
+    
+    	public String getUrl() {
+    		return url;
+    	}
+    
+    	public String getTfcli() {
+    		return tfcli;
+    	}
         
 //        public String getUrl() {
 //			return url;
