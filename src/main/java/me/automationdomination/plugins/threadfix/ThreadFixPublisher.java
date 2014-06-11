@@ -40,6 +40,7 @@ public class ThreadFixPublisher extends Recorder {
 
 	@DataBoundConstructor
 	public ThreadFixPublisher(final String appId) {
+		// TODO: clean up these exceptions because they don't stop the value from being saved
 		if (appId == null) {
 			throw new IllegalArgumentException("appId cannot be null");
 		}
@@ -129,7 +130,7 @@ public class ThreadFixPublisher extends Recorder {
 		final String setServerUrlCommandOutput = runCommand(setServerUrlCommand);
 		log.println(setServerUrlCommandOutput);
 		
-		
+		// TODO: mask api key
 		// TODO: build this with a string builder or use a constant or something
 		log.println("setting threadfix server api key");
 		final String setApiKeyCommand = "java -jar " + tfcli + " --set key " + token;
@@ -302,11 +303,22 @@ public class ThreadFixPublisher extends Recorder {
 
 		@Override
 		public boolean configure(final StaplerRequest staplerRequest, final JSONObject formData) throws FormException {
+			// TODO: throw form exception on bad values?
 			url = formData.getString("url");
 
 			token = formData.getString("token");
 			
 			tfcli = formData.getString("tfcli");
+			
+			if (tfcli != null  && tfcli.length() > 0) {
+				final File tfcliFile = new File(tfcli);
+				
+				if (!tfcliFile.exists()) {
+					throw new FormException("\"" + tfcli + "\" does not exist", "tfcli"); 
+				}
+			} else {
+				throw new FormException("value for threadfix cli jar must be preseent", "tfcli");
+			}
 
 			save();
 
