@@ -37,6 +37,7 @@ import org.kohsuke.stapler.StaplerRequest;
 public class ThreadFixPublisher extends Recorder {
 	
 	private final String appId;
+	private final String scanFile;
 	
 	private final ConfigurationValueValidator tfcliValidator = new FileValidator();
 	private final ConfigurationValueValidator threadFixServerUrlValidator = new UrlValidator();
@@ -44,8 +45,9 @@ public class ThreadFixPublisher extends Recorder {
 	private final ConfigurationValueValidator appIdValidator = new NumericStringValidator();
 
 	@DataBoundConstructor
-	public ThreadFixPublisher(final String appId) {
+	public ThreadFixPublisher(final String appId, final String scanFile) {
 		this.appId = appId;
+		this.scanFile = scanFile;
 	}
 
 	/**
