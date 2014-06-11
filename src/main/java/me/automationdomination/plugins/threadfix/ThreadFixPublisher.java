@@ -37,27 +37,15 @@ import org.kohsuke.stapler.StaplerRequest;
 public class ThreadFixPublisher extends Recorder {
 	
 	private final String appId;
+	
+	private final ConfigurationValueValidator tfcliValidator = new FileValidator();
+	private final ConfigurationValueValidator threadFixServerUrlValidator = new UrlValidator();
+	private final ConfigurationValueValidator tokenValidator = new StringValidator();
+	private final ConfigurationValueValidator appIdValidator = new NumericStringValidator();
 
 	@DataBoundConstructor
 	public ThreadFixPublisher(final String appId) {
-		// TODO: clean up these exceptions because they don't stop the value from being saved
-		if (appId == null) {
-			throw new IllegalArgumentException("appId cannot be null");
-		}
-		
-		final String trimmedAppId = appId.trim();
-		
-		if (trimmedAppId.length() == 0) {
-			throw new IllegalArgumentException("illegal appId: \"" + appId + "\"");
-		}
-		
-		try {
-			Integer.parseInt(trimmedAppId);
-		} catch (final NumberFormatException e) {
-			throw new IllegalArgumentException("illegal appId: \"" + appId + "\"");
-		}
-		
-		this.appId = trimmedAppId;
+		this.appId = appId;
 	}
 
 	/**
@@ -72,55 +60,46 @@ public class ThreadFixPublisher extends Recorder {
 			final BuildListener listener) throws InterruptedException, IOException {
 		// TODO: does this appId need to be validated before execution?
 		final PrintStream log = launcher.getListener().getLogger();
+		
 		log.println("beginning threadfix publisher execution with app id \"" + appId + "\"");
 		
+		final boolean appIdIsValid = appIdValidator.isValid(appId);
+		
+		if (!appIdIsValid) {
+			throw new AbortException("app id is invalid");
+		}
 
 		log.println("retrieving global configurations...");
 		final DescriptorImpl descriptor = this.getDescriptor();
 		
 		
-		// TODO: better way to share validation with descriptor?
 		final String tfcli = descriptor.getTfcli();
 		log.println("found tfcli: \"" + tfcli + "\"");
-		final FormValidation tfcliFormValidation;
-		try {
-			tfcliFormValidation = descriptor.doCheckTfcli(tfcli);
-			
-			if (tfcliFormValidation != FormValidation.ok())
-				throw new AbortException("threadfix-cli jar is invalid");
-		} catch (final ServletException e) {
-			throw new RuntimeException("exception validating threadfix cli", e);
+		
+		final boolean tfcliIsValid = tfcliValidator.isValid(tfcli);
+		
+		if (!tfcliIsValid) {
+			throw new AbortException("threadfix-cli jar is invalid");
 		}
 		
-		
-		// TODO: better way to share validation with descriptor?
 		final String url = descriptor.getUrl();
 		log.println("found url: \"" + url + "\"");
-		final FormValidation urlFormValidation;
-		try {
-			urlFormValidation = descriptor.doCheckUrl(url);
-
-			if (urlFormValidation != FormValidation.ok())
-				throw new AbortException("threadfix server url is invalid");
-		} catch (ServletException e) {
-			throw new RuntimeException("exception validating threadfix url", e);
+		
+		final boolean threadFixServerUrlIsValid = threadFixServerUrlValidator.isValid(url);
+		
+		if (!threadFixServerUrlIsValid) {
+			throw new AbortException("threadfix server url is invalid");
 		}
-		
-		
-		// TODO: better way to share validation with descriptor?
+
 		final String token = descriptor.getToken();
 		log.println("found token: \"" + token + "\"");
-		final FormValidation tokenFormValidation;
-		try {
-			tokenFormValidation = descriptor.doCheckToken(token);
+		
+		final boolean tokenIsValid = tokenValidator.isValid(token);
+		
+		if (!tokenIsValid) {
+			throw new AbortException("threadfix api key is invalid");
+		}		
 
-			if (tokenFormValidation != FormValidation.ok())
-				throw new AbortException("threadfix api key is invalid");
-		} catch (ServletException e) {
-			throw new RuntimeException("exception validating threadfix api key", e);
-		}
-		
-		
 		
 		// TODO: build this with a string builder or use a constant or something
 		log.println("setting threadfix server url");
@@ -242,6 +221,10 @@ public class ThreadFixPublisher extends Recorder {
 		private String tfcli;
 		private String url;
 		private String token;
+		
+		private final ConfigurationValueValidator tfcliValidator = new FileValidator();
+		private final ConfigurationValueValidator threadFixServerUrlValidator = new UrlValidator();
+		private final ConfigurationValueValidator tokenValidator = new StringValidator();
 
 		/**
 		 * In order to load the persisted global configuration, you have to call
@@ -264,35 +247,33 @@ public class ThreadFixPublisher extends Recorder {
 		 *         message will be displayed to the user.
 		 */
 		public FormValidation doCheckTfcli(@QueryParameter final String value) throws IOException, ServletException {
-			// TODO: add more validation
-			if (value == null || value.length() == 0)
-				return FormValidation.error("Please provide the path to the threadfix-cli jar");
+			final boolean isValid = tfcliValidator.isValid(value);
 			
-			final File tfcliFile = new File(value);
-			
-			if (!tfcliFile.exists()) 
-				return FormValidation.error("threadfix-cli jar file not found");
-			
-			return FormValidation.ok();
+			if (!isValid) {
+				return FormValidation.error("threadfix-cli jar is invalid");
+			} else {
+				return FormValidation.ok();
+			}			
 		}
 		
 		public FormValidation doCheckUrl(@QueryParameter final String value) throws IOException, ServletException {
-			// TODO: add more validation
-			if (value == null || value.length() == 0)
-				return FormValidation.error("Please provide the RESTful URL of your ThreadFix server");
-			
-			if (value.length() < 7)
-				return FormValidation.warning("This is not a URL");
-			
-			return FormValidation.ok();
+			final boolean isValid = threadFixServerUrlValidator.isValid(value);
+
+			if (!isValid) {
+				return FormValidation.error("threafix server url is invalid");
+			} else {
+				return FormValidation.ok();
+			}
 		}
 
 		public FormValidation doCheckToken(@QueryParameter final String value) throws IOException, ServletException {
-			// TODO: add more validation
-			if (value == null || value.length() == 0)
-				return FormValidation.error("Please provide the API token of your ThreadFix server");
+			final boolean isValid = tokenValidator.isValid(value);
 			
-			return FormValidation.ok();
+			if (!isValid) {
+				return FormValidation.error("threadfix server api key is invalid");
+			} else {
+				return FormValidation.ok();
+			}
 		}
 
 		public boolean isApplicable(@SuppressWarnings("rawtypes") final Class<? extends AbstractProject> jobType) {
@@ -305,19 +286,21 @@ public class ThreadFixPublisher extends Recorder {
 		public boolean configure(final StaplerRequest staplerRequest, final JSONObject formData) throws FormException {
 			// TODO: throw form exception on bad values?
 			url = formData.getString("url");
+			
+			if (threadFixServerUrlValidator.isValid(url)) {
+				throw new FormException("threadfix server url is invalid", "url");
+			}
 
 			token = formData.getString("token");
 			
+			if (tokenValidator.isValid(token)) {
+				throw new FormException("threadfix server api key is invalid", "token");
+			}
+			
 			tfcli = formData.getString("tfcli");
 			
-			if (tfcli != null  && tfcli.length() > 0) {
-				final File tfcliFile = new File(tfcli);
-				
-				if (!tfcliFile.exists()) {
-					throw new FormException("\"" + tfcli + "\" does not exist", "tfcli"); 
-				}
-			} else {
-				throw new FormException("value for threadfix cli jar must be preseent", "tfcli");
+			if (!tfcliValidator.isValid(tfcli)) {
+				throw new FormException("threadfix-cli jar is invalid", "tfcli");
 			}
 
 			save();
