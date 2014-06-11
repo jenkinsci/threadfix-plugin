@@ -26,6 +26,8 @@
     <f:textbox/>
   </f:entry>
   
-  <f:entry title="Scan File" description="Path to Scan File to be Uploaded to ThreadFix Server" field="scanFile"
+  <f:entry title="Scan File" description="Path to Scan File to be Uploaded to ThreadFix Server" field="scanFile">
+    <f:textbox/>
+  </f:entry>
   
 </j:jelly>

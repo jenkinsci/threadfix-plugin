@@ -1,4 +1,4 @@
-package me.automationdomination.plugins.threadfix;
+package me.automationdomination.plugins.threadfix.validation;
 
 public class NumericStringValidator implements ConfigurationValueValidator {
 
@@ -7,13 +7,8 @@ public class NumericStringValidator implements ConfigurationValueValidator {
 		if (value == null || value.isEmpty())
 			return false;
 
-		final String trimmedAppId = value.trim();
-
-		if (trimmedAppId.length() == 0)
-			return false;
-
 		try {
-			Integer.parseInt(trimmedAppId);
+			Integer.parseInt(value);
 		} catch (final NumberFormatException e) {
 			return false;
 		}

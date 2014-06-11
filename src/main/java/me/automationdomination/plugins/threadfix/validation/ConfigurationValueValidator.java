@@ -1,4 +1,4 @@
-package me.automationdomination.plugins.threadfix;
+package me.automationdomination.plugins.threadfix.validation;
 
 public interface ConfigurationValueValidator {
 	

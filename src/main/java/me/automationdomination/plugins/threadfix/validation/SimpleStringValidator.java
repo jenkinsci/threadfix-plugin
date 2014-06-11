@@ -1,6 +1,6 @@
-package me.automationdomination.plugins.threadfix;
+package me.automationdomination.plugins.threadfix.validation;
 
-public class StringValidator implements ConfigurationValueValidator {
+public class SimpleStringValidator implements ConfigurationValueValidator {
 
 	@Override
 	public boolean isValid(final String value) {
