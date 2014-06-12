@@ -25,6 +25,10 @@
   <f:entry title="Application ID" description="The Application ID on the ThreadFix Server" field="appId">
     <f:textbox/>
   </f:entry>
+
+    <f:entry title="Scan File Name" description="The scan file name" field="scanFile">
+      <f:textbox/>
+    </f:entry>
   
   <f:entry title="Scan File" description="Path to Scan File to be Uploaded to ThreadFix Server" field="scanFile">
     <f:textbox/>
