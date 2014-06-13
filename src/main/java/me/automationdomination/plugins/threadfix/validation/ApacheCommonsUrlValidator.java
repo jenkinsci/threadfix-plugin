@@ -1,28 +1,49 @@
 package me.automationdomination.plugins.threadfix.validation;
 
 import org.apache.commons.validator.routines.UrlValidator;
-import me.automationdomination.plugins.threadfix.ThreadFixPublisher;
+
+/**
+ * public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
+ throws IOException, ServletException {
+
+ HttpServletRequest req = (HttpServletRequest)request;
+
+ String requestUrl = req.getRequestURL().toString();
+ String queryString = req.getQueryString();
+ if (queryString != null) {
+ requestUrl += "?" + queryString;
+ }
+
+ if (urlValidator.isValid(requestUrl) && isValidQuery(queryString)) {
+ chain.doFilter(request, response);
+ } else {
+ HttpServletResponse res = (HttpServletResponse)response;
+ res.sendError(HttpServletResponse.SC_BAD_REQUEST);
+ return;
+ }
+ */
 
 public class ApacheCommonsUrlValidator implements ConfigurationValueValidator {
 
-	private final UrlValidator urlValidator = new UrlValidator();
+    String[] schemes = {"http","https"};
+	private final UrlValidator urlValidator = new UrlValidator(UrlValidator.ALLOW_LOCAL_URLS);
 
 
 	@Override
 	public boolean isValid(final String value) {
 		if (value == null || value.length() == 0)
 			return false;
-
+        /*
 		if (!urlValidator.isValid(value))
             (value == null || value.length() == 0)
 			return false;
-
+         */
         // TODO how do you access "url" from ThreadFixPublisher
-        if (urlValidator.isValid(url)) {
-            System.out.println(url + " is valid");
+        if (urlValidator.isValid("http://automationdomination.me")) {
+            System.out.println("http://automationdomination.me" + " is valid");
         }
         else {
-            System.out.println(url + " is invalid");
+            System.out.println("http://automationdomination.me" + " is invalid");
         }
 
 		return true;
