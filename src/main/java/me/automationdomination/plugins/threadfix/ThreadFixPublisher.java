@@ -132,6 +132,14 @@ public class ThreadFixPublisher extends Recorder {
 		return (DescriptorImpl) super.getDescriptor();
 	}
 
+	public String getAppId() {
+		return appId;
+	}
+
+	public String getScanFile() {
+		return scanFile;
+	}
+
 	/**
 	 * Descriptor for {@link ThreadFixPublisher}. Used as a singleton. The class
 	 * is marked as public so that it can be accessed from views.

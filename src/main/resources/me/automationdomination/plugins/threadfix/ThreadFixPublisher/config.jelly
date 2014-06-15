@@ -23,11 +23,11 @@
   -->
   
   <f:entry title="Application ID" description="The Application ID on the ThreadFix Server" field="appId">
-    <f:textbox/>
+    <f:textbox value="${it.appId}"/>
   </f:entry>
   
   <f:entry title="Scan File" description="Path to Scan File to be Uploaded to ThreadFix Server" field="scanFile">
-    <f:textbox/>
+    <f:textbox value="${it.scanFile}"/>
   </f:entry>
   
 </j:jelly>
