@@ -26,18 +26,16 @@ import me.automationdomination.plugins.threadfix.ThreadFixPublisher;
 
 public class ApacheCommonsUrlValidator implements ConfigurationValueValidator {
 
-    String[] schemes = {"http","https"};
-	private final UrlValidator urlValidator = new UrlValidator(UrlValidator.ALLOW_LOCAL_URLS);
-
+	private final UrlValidator urlValidator = new UrlValidator(new String[] { "http", "https" }, UrlValidator.ALLOW_LOCAL_URLS);
 
 	@Override
 	public boolean isValid(final String value) {
 		if (value == null || value.length() == 0)
 			return false;
-        /*
+		
 		if (!urlValidator.isValid(value))
-            (value == null || value.length() == 0)
 			return false;
+<<<<<<< HEAD
 			String url = ThreadFixPublisher.DescriptorImpl.getCurrentDescriptorByNameUrl();
          */
         // TODO how do you access "url" from ThreadFixPublisher
@@ -47,6 +45,8 @@ public class ApacheCommonsUrlValidator implements ConfigurationValueValidator {
         else {
             System.out.println(ThreadFixPublisher.DescriptorImpl.getCurrentDescriptorByNameUrl() + " is invalid");
         }
+=======
+>>>>>>> 73c310abae6e2f5be4c818cedb612d7c2f2b5f22
 
 		return true;
 	}

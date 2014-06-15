@@ -1,6 +1,7 @@
 package me.automationdomination.plugins.threadfix;
 
 import hudson.AbortException;
+import hudson.EnvVars;
 import hudson.Extension;
 import hudson.Launcher;
 import hudson.model.AbstractBuild;
@@ -11,6 +12,16 @@ import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
 import hudson.util.FormValidation;
+<<<<<<< HEAD
+=======
+
+import java.io.IOException;
+import java.io.PrintStream;
+
+import javax.servlet.ServletException;
+
+import me.automationdomination.plugins.threadfix.service.JenkinsEnvironmentVariableParsingService;
+>>>>>>> 73c310abae6e2f5be4c818cedb612d7c2f2b5f22
 import me.automationdomination.plugins.threadfix.service.ThreadFixUploadService;
 import me.automationdomination.plugins.threadfix.validation.*;
 import net.sf.json.JSONObject;
@@ -55,20 +66,37 @@ public class ThreadFixPublisher extends Recorder {
 			final BuildListener listener) throws InterruptedException, IOException {
 		final PrintStream log = launcher.getListener().getLogger();
 		
-		log.println("beginning threadfix publisher execution");
+		// TODO: validate that environment was retrieved?
+		final EnvVars envVars = build.getEnvironment(listener);
+		
+		// TODO: why doesn't this work as a member variable?
+		final JenkinsEnvironmentVariableParsingService jenkinsEnvironmentVariableParsingService = new JenkinsEnvironmentVariableParsingService();
+		
+		log.println("beginning threadfix publisher execution");		
 		
 		
-		if (!appIdValidator.isValid(appId))
+		
+		log.println("raw app id: " + appId);
+
+		final String parsedAppId = jenkinsEnvironmentVariableParsingService.parseEnvironentVariables(envVars, appId);
+		
+		if (!appIdValidator.isValid(parsedAppId))
 			throw new AbortException(String.format(appIdErrorTemplate, appId));
 		
-		log.println("using app id: " + appId);
+		log.println("using app id: " + parsedAppId);
 		
 		
-		if (!scanFileValidator.isValid(scanFile))
+		
+		log.println("raw scan file: " + scanFile);
+		
+		final String parsedScanFile = jenkinsEnvironmentVariableParsingService.parseEnvironentVariables(envVars, scanFile);
+		
+		if (!scanFileValidator.isValid(parsedScanFile))
 			throw new AbortException(String.format(scanFileErrorTemplate, scanFile));
 		
-		log.println("using scan file: " + scanFile);
+		log.println("using scan file: " + parsedScanFile);
 
+		
 		
 		log.println("retrieving global configurations");
 		
@@ -101,13 +129,14 @@ public class ThreadFixPublisher extends Recorder {
 		log.println("using token: " + token);
 		
 		
-		// the scan file validator should have verified that this file exists already
 		
+		// the scan file validator should have verified that this file exists already
 		log.println("uploading scan file");
 		final ThreadFixUploadService threadFixUploadService = new ThreadFixUploadService(tfcli, threadFixServerUrl, token);
-		threadFixUploadService.uploadFile(appId, scanFile);
+		threadFixUploadService.uploadFile(parsedAppId, parsedScanFile);
 		
 
+		
 		log.println("threadfix publisher execution complete");
 
 		// returning true/false should be considered deprecated...
@@ -123,6 +152,14 @@ public class ThreadFixPublisher extends Recorder {
 	@Override
 	public DescriptorImpl getDescriptor() {
 		return (DescriptorImpl) super.getDescriptor();
+	}
+
+	public String getAppId() {
+		return appId;
+	}
+
+	public String getScanFile() {
+		return scanFile;
 	}
 
 	/**
