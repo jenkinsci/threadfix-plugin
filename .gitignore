@@ -1,6 +1,7 @@
 # ThreadFix #
 #############
 threadfix.properties
+threadfix-cli.log
 
 # IntelliJ files #
 ##################
