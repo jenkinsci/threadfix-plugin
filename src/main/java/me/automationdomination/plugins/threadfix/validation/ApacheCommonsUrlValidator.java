@@ -4,7 +4,7 @@ import org.apache.commons.validator.routines.UrlValidator;
 
 public class ApacheCommonsUrlValidator implements ConfigurationValueValidator {
 
-	private final UrlValidator urlValidator = new UrlValidator();
+	private final UrlValidator urlValidator = new UrlValidator(UrlValidator.ALLOW_LOCAL_URLS);
 
 	@Override
 	public boolean isValid(final String value) {
