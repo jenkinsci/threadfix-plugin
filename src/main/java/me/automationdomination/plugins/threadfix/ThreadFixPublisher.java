@@ -12,16 +12,7 @@ import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
 import hudson.util.FormValidation;
-<<<<<<< HEAD
-=======
-
-import java.io.IOException;
-import java.io.PrintStream;
-
-import javax.servlet.ServletException;
-
 import me.automationdomination.plugins.threadfix.service.JenkinsEnvironmentVariableParsingService;
->>>>>>> 73c310abae6e2f5be4c818cedb612d7c2f2b5f22
 import me.automationdomination.plugins.threadfix.service.ThreadFixUploadService;
 import me.automationdomination.plugins.threadfix.validation.*;
 import net.sf.json.JSONObject;
