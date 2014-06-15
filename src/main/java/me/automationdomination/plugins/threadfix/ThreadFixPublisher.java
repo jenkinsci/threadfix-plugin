@@ -3,31 +3,24 @@ package me.automationdomination.plugins.threadfix;
 import hudson.AbortException;
 import hudson.Extension;
 import hudson.Launcher;
-import hudson.model.BuildListener;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
+import hudson.model.BuildListener;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
 import hudson.util.FormValidation;
-
-import java.io.IOException;
-import java.io.PrintStream;
-
-import javax.servlet.ServletException;
-
 import me.automationdomination.plugins.threadfix.service.ThreadFixUploadService;
-import me.automationdomination.plugins.threadfix.validation.ApacheCommonsUrlValidator;
-import me.automationdomination.plugins.threadfix.validation.ConfigurationValueValidator;
-import me.automationdomination.plugins.threadfix.validation.FileValidator;
-import me.automationdomination.plugins.threadfix.validation.NumericStringValidator;
-import me.automationdomination.plugins.threadfix.validation.SimpleStringValidator;
+import me.automationdomination.plugins.threadfix.validation.*;
 import net.sf.json.JSONObject;
-
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
+
+import javax.servlet.ServletException;
+import java.io.IOException;
+import java.io.PrintStream;
 
 /**
  * Created with IntelliJ IDEA. User: bspruth Date: 3/22/14 Time: 12:05 AM To
@@ -180,7 +173,7 @@ public class ThreadFixPublisher extends Recorder {
 		/**
 		 * Performs on-the-fly validation of the form fields 'tfcli'.
 		 * 
-		 * @param value
+		 * @param tfcli
 		 *            This parameter receives the value that the user has typed.
 		 * @return Indicates the outcome of the validation. This is sent to the
 		 *         browser.
@@ -189,23 +182,23 @@ public class ThreadFixPublisher extends Recorder {
 		 *         not prevent the form from being saved. It just means that a
 		 *         message will be displayed to the user.
 		 */
-		public FormValidation doCheckTfcli(@QueryParameter final String value) throws IOException, ServletException {
-			if (!tfcliValidator.isValid(value))
-				return FormValidation.error(String.format(tfcliErrorTemplate, value));
+		public FormValidation doCheckTfcli(@QueryParameter final String tfcli) throws IOException, ServletException {
+			if (!tfcliValidator.isValid(tfcli))
+				return FormValidation.error(String.format(tfcliErrorTemplate, tfcli));
 
 			return FormValidation.ok();
 		}
-		
-		public FormValidation doCheckUrl(@QueryParameter final String value) throws IOException, ServletException {
-			if (!threadFixServerUrlValidator.isValid(value))
-				return FormValidation.error(String.format(threadFixServerUrlErrorTemplate, value));
+
+		public FormValidation doCheckUrl(@QueryParameter final String url) throws IOException, ServletException {
+			if (!threadFixServerUrlValidator.isValid(url))
+				return FormValidation.error(String.format(threadFixServerUrlErrorTemplate, url));
 			
 			return FormValidation.ok();
 		}
 
-		public FormValidation doCheckToken(@QueryParameter final String value) throws IOException, ServletException {
-			if (!tokenValidator.isValid(value))
-				return FormValidation.error(String.format(tokenErrorTemplate, value));
+		public FormValidation doCheckToken(@QueryParameter final String token) throws IOException, ServletException {
+			if (!tokenValidator.isValid(token))
+				return FormValidation.error(String.format(tokenErrorTemplate, token));
 
 			return FormValidation.ok();
 		}

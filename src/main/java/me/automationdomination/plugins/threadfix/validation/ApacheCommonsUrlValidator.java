@@ -1,6 +1,7 @@
 package me.automationdomination.plugins.threadfix.validation;
 
 import org.apache.commons.validator.routines.UrlValidator;
+import me.automationdomination.plugins.threadfix.ThreadFixPublisher;
 
 /**
  * public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
@@ -37,13 +38,14 @@ public class ApacheCommonsUrlValidator implements ConfigurationValueValidator {
 		if (!urlValidator.isValid(value))
             (value == null || value.length() == 0)
 			return false;
+			String url = ThreadFixPublisher.DescriptorImpl.getCurrentDescriptorByNameUrl();
          */
         // TODO how do you access "url" from ThreadFixPublisher
-        if (urlValidator.isValid("http://automationdomination.me")) {
-            System.out.println("http://automationdomination.me" + " is valid");
+        if (urlValidator.isValid(ThreadFixPublisher.DescriptorImpl.getCurrentDescriptorByNameUrl())) {
+            System.out.println(ThreadFixPublisher.DescriptorImpl.getCurrentDescriptorByNameUrl() + " is valid");
         }
         else {
-            System.out.println("http://automationdomination.me" + " is invalid");
+            System.out.println(ThreadFixPublisher.DescriptorImpl.getCurrentDescriptorByNameUrl() + " is invalid");
         }
 
 		return true;
