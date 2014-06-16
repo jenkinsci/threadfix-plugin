@@ -231,15 +231,19 @@ public class ThreadFixPublisher extends Recorder {
 			return FormValidation.ok();
 		}
 
-        public FormValidation doTestConnection(@QueryParameter final String url,@QueryParameter final String token) throws IOException, ServletException {
-            try {
-                // TODO add test - tfcli
-                //http://automationdomination.me/threadfix/rest/teams?apiKey=oNgiwdVwHwkFAUX22LJeExwrTtfher8q5W26ihgkBI
-                return FormValidation.ok("ThreadFix connection success!");
-            }  catch (Exception e) {
-                return FormValidation.error("ThreadFix connection error : "+e.getMessage());
-            }
-        }
+		public FormValidation doTestConnection(
+				@QueryParameter final String url,
+				@QueryParameter final String token) throws IOException,
+				ServletException {
+			try {
+				// TODO add test - tfcli
+				// http://automationdomination.me/threadfix/rest/teams?apiKey=oNgiwdVwHwkFAUX22LJeExwrTtfher8q5W26ihgkBI
+				return FormValidation.ok("ThreadFix connection success!");
+			} catch (Exception e) {
+				return FormValidation.error("ThreadFix connection error : "
+						+ e.getMessage());
+			}
+		}
 
 		public boolean isApplicable(@SuppressWarnings("rawtypes") final Class<? extends AbstractProject> jobType) {
 			// Indicates that this builder can be used with all kinds of project
