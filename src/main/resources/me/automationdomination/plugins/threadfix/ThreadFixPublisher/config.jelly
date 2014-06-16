@@ -1,32 +1,11 @@
 <?xml version="1.0"?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
-  <!-- Some javascript -->
-  <!--
-  <f:entry>
-    <input type="button" value="Click here!" onClick="sayHi();"/>
-  </f:entry>
-  -->
-  
-  <!--
-  <st:once>
-    <script type="text/javascript" src="${rootURL}/plugin/threadfix/js/threadfixPlugin.js" />
-  </st:once>
-  -->
-  
-  <!--
-  <f:entry title="Application Name" field="useThreadfixAppName">
-    <f:dropdownList name="Application" title="Threadfix Application">
-      <f:dropdownListBlock title="soplanning" value="soplanning" staplerClass="A" />
-      <f:dropdownListBlock title="webgoat" value="webgoat" staplerClass="B" />
-    </f:dropdownList>
-  </f:entry>
-  -->
-  
-  <f:entry title="Application ID" description="The Application ID on the ThreadFix Server" field="appId">
+
+  <f:entry title="Application ID" description="The application ID on the ThreadFix server" field="appId">
     <f:textbox value="${it.appId}"/>
   </f:entry>
-  
-  <f:entry title="Scan File" description="Path to Scan File to be Uploaded to ThreadFix Server" field="scanFile">
+
+  <f:entry title="Scan filename location" description="Scan filename with relative path in the job's workspace." field="scanFile">
     <f:textbox value="${it.scanFile}"/>
   </f:entry>
   

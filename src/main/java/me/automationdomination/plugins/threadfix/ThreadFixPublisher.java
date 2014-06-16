@@ -4,32 +4,25 @@ import hudson.AbortException;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.Launcher;
-import hudson.model.BuildListener;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
+import hudson.model.BuildListener;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
 import hudson.util.FormValidation;
-
-import java.io.IOException;
-import java.io.PrintStream;
-
-import javax.servlet.ServletException;
-
 import me.automationdomination.plugins.threadfix.service.JenkinsEnvironmentVariableParsingService;
 import me.automationdomination.plugins.threadfix.service.ThreadFixUploadService;
-import me.automationdomination.plugins.threadfix.validation.ApacheCommonsUrlValidator;
-import me.automationdomination.plugins.threadfix.validation.ConfigurationValueValidator;
-import me.automationdomination.plugins.threadfix.validation.FileValidator;
-import me.automationdomination.plugins.threadfix.validation.NumericStringValidator;
-import me.automationdomination.plugins.threadfix.validation.SimpleStringValidator;
+import me.automationdomination.plugins.threadfix.validation.*;
 import net.sf.json.JSONObject;
-
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
+
+import javax.servlet.ServletException;
+import java.io.IOException;
+import java.io.PrintStream;
 
 /**
  * Created with IntelliJ IDEA. User: bspruth Date: 3/22/14 Time: 12:05 AM To
@@ -172,7 +165,7 @@ public class ThreadFixPublisher extends Recorder {
 	@Extension // This indicates to Jenkins that this is an implementation of an extension point.
 	public static final class DescriptorImpl extends BuildStepDescriptor<Publisher> {
 		
-		private static final String DISPLAY_NAME = "ThreadFix Scan to ThreadFix Server";
+		private static final String DISPLAY_NAME = "Publish ThreadFix Scan";
 		
 		private static final String TFCLI_PARAMETER = "tfcli";
 		private static final String URL_PARAMETER = "url";
@@ -237,6 +230,16 @@ public class ThreadFixPublisher extends Recorder {
 
 			return FormValidation.ok();
 		}
+
+        public FormValidation doTestConnection(@QueryParameter final String url,@QueryParameter final String token) throws IOException, ServletException {
+            try {
+                // TODO add test - tfcli
+                //http://automationdomination.me/threadfix/rest/teams?apiKey=oNgiwdVwHwkFAUX22LJeExwrTtfher8q5W26ihgkBI
+                return FormValidation.ok("ThreadFix connection success!");
+            }  catch (Exception e) {
+                return FormValidation.error("ThreadFix connection error : "+e.getMessage());
+            }
+        }
 
 		public boolean isApplicable(@SuppressWarnings("rawtypes") final Class<? extends AbstractProject> jobType) {
 			// Indicates that this builder can be used with all kinds of project

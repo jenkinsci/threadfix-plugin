@@ -2,26 +2,20 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
   <!--
     This Jelly script is used to produce the global configuration option.
-
-    Jenkins uses a set of tag libraries to provide uniformity in forms.
-    To determine where this tag is defined, first check the namespace URI,
-    and then look under $JENKINS/views/. For example, <f:section> is defined
-    in $JENKINS/views/lib/form/section.jelly.
-
-    It's also often useful to just check other similar scripts to see what
-    tags they use. Views are always organized according to its owner class,
-    so it should be straightforward to find them.
   -->
-  <f:section title="ThreadFix Server Configuration">
+  <f:section title="ThreadFix">
     <!-- defaults can be added for these textboxes (e.g., <f:textbox default="something"/>) -->
-    <f:entry title="ThreadFix CLI Jar" description="Path to ThreadFIX CLI Jar File" field="tfcli">
+    <f:entry title="ThreadFix TFCLI Jar" description="Path to the ThreadFix tfcli.jar on Jenkins server" field="tfcli">
       <f:textbox/>
     </f:entry>
-    <f:entry title="ThreadFix Server RESTful URL" description="ThreadFix Server RESTful URL" field="url">
+    <f:entry title="ThreadFix Server URL" description="URL for your ThreadFix Server" field="url">
       <f:textbox/>
     </f:entry>
-    <f:entry title="ThreadFix Server API Key" description="ThreadFix Server API Key" field="token">
-      <f:textbox default="fch5qV5SVksAeJOsBb3W8YRAZP7EGK4BAetumVzNaX58"/>
+    <f:entry title="ThreadFix Server API Key" description="ThreadFix Server's API Key" field="token">
+      <f:password field="token" />
     </f:entry>
+    <f:validateButton
+       title="${%Test Connection}" progress="${%Testing...}"
+       method="testConnection" with="tfcli,url,token" />
   </f:section>
 </j:jelly>

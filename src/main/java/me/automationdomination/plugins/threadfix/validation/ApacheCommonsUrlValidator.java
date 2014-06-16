@@ -5,8 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-
-
 public class ApacheCommonsUrlValidator implements ConfigurationValueValidator {
 	
 	private static final Logger logger = LoggerFactory.getLogger(ApacheCommonsUrlValidator.class);
