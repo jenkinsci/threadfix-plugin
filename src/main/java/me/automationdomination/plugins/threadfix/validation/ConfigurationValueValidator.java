@@ -4,5 +4,4 @@ public interface ConfigurationValueValidator {
 	
 	public boolean isValid(String value);
 
-
 }

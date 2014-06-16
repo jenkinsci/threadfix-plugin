@@ -1,31 +1,33 @@
 package me.automationdomination.plugins.threadfix.validation;
 
 import org.apache.commons.validator.routines.UrlValidator;
-import me.automationdomination.plugins.threadfix.ThreadFixPublisher;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
 
 
 public class ApacheCommonsUrlValidator implements ConfigurationValueValidator {
+	
+	private static final Logger logger = LoggerFactory.getLogger(ApacheCommonsUrlValidator.class);
 
 	private final UrlValidator urlValidator = new UrlValidator(new String[] { "http", "https" }, UrlValidator.ALLOW_LOCAL_URLS);
 
 	@Override
 	public boolean isValid(final String value) {
-		if (value == null || value.length() == 0)
-			return false;
+		if (logger.isDebugEnabled()) logger.debug("checking url <" + value + ">");
+		
+		boolean isValid = true;
+		
+		if (value == null || value.length() == 0) {
+			isValid = false;
+		} else if (!urlValidator.isValid(value)) {
+			isValid = false;
+		}
+		
+		if (logger.isDebugEnabled()) logger.debug("url <" + value + "> is <" + (isValid ? "VALID" : "INVALID") + ">");
 
-		if (!urlValidator.isValid(value))
-			return false;
-			//String url = ThreadFixPublisher.DescriptorImpl.getCurrentDescriptorByNameUrl();
-
-        // TODO how do you access "url" from ThreadFixPublisher
-        if (urlValidator.isValid(ThreadFixPublisher.DescriptorImpl.getCurrentDescriptorByNameUrl())) {
-            System.out.println(ThreadFixPublisher.DescriptorImpl.getCurrentDescriptorByNameUrl() + " is valid");
-        }
-        else {
-            System.out.println(ThreadFixPublisher.DescriptorImpl.getCurrentDescriptorByNameUrl() + " is invalid");
-        }
-
-		return true;
+		return isValid;
 	}
 
 }
