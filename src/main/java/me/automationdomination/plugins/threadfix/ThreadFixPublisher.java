@@ -231,10 +231,29 @@ public class ThreadFixPublisher extends Recorder {
 			return FormValidation.ok();
 		}
 
-        public FormValidation doTestConnection(@QueryParameter final String url,@QueryParameter final String token) throws IOException, ServletException {
+        public FormValidation doTestConnection(@QueryParameter final String url,@QueryParameter final String token,@QueryParameter final String tfcli) throws IOException, ServletException {
             try {
-                // TODO add test - tfcli
+                /* TODO add test - tfcli
                 //http://automationdomination.me/threadfix/rest/teams?apiKey=oNgiwdVwHwkFAUX22LJeExwrTtfher8q5W26ihgkBI
+    		// backup original values
+    		String orig_url = this.url;
+    		String orig_tfcli = this.jarsPath;
+    		String orig_token = this.token;
+    		this.url = url;
+    		this.token = token;
+    		this.tfcli = tfcli;
+			try {
+				// as long as no exception, that's ok
+				ThreadFixPublisher.invokeThreadFixClient(token, "tpp", null, System.out);
+	    		return FormValidation.ok("ThreadFix Connection Successful");
+			} catch (Throwable t ) {
+				return FormValidation.error(t.getMessage());
+			} finally {
+				this.url = orig_url;
+	    		this.token = orig_token;
+	    		this.tfcli = orig_tfcli;
+			}
+                */
                 return FormValidation.ok("ThreadFix connection success!");
             }  catch (Exception e) {
                 return FormValidation.error("ThreadFix connection error : "+e.getMessage());
