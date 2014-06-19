@@ -19,7 +19,7 @@ import java.io.PrintStream;
 import javax.servlet.ServletException;
 
 import me.automationdomination.plugins.threadfix.service.JenkinsEnvironmentVariableParsingService;
-import me.automationdomination.plugins.threadfix.service.ThreadFixUploadService;
+import me.automationdomination.plugins.threadfix.service.TfcliService;
 import me.automationdomination.plugins.threadfix.validation.ApacheCommonsUrlValidator;
 import me.automationdomination.plugins.threadfix.validation.ConfigurationValueValidator;
 import me.automationdomination.plugins.threadfix.validation.FileValidator;
@@ -130,7 +130,7 @@ public class ThreadFixPublisher extends Recorder {
 		
 		// the scan file validator should have verified that this file exists already
 		log.println("uploading scan file");
-		final ThreadFixUploadService threadFixUploadService = new ThreadFixUploadService(tfcli, threadFixServerUrl, token);
+		final TfcliService threadFixUploadService = new TfcliService(tfcli, threadFixServerUrl, token);
 		threadFixUploadService.uploadFile(parsedAppId, parsedScanFile);
 		
 
