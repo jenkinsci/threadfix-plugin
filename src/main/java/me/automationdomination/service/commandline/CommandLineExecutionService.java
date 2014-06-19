@@ -8,7 +8,7 @@ import java.io.InputStreamReader;
 
 public class CommandLineExecutionService {
 	
-	public CommandLineOutput executeCommand(final String command) throws CommandLineExecutionServiceException {
+	public CommandLineExecutionResult executeCommand(final String command) throws CommandLineExecutionServiceException {
 		final StringBuilder outputBuilder = new StringBuilder();
 		final Runtime runtime = Runtime.getRuntime();
 		
@@ -48,9 +48,9 @@ public class CommandLineExecutionService {
 		}
 		
 		
-		final CommandLineOutput commandLineOutput = new CommandLineOutput(returnValue, outputBuilder.toString());
+		final CommandLineExecutionResult commandLineExecutionOutput = new CommandLineExecutionResult(returnValue, outputBuilder.toString());
 		
-		return commandLineOutput;
+		return commandLineExecutionOutput;
 	}
 
 }

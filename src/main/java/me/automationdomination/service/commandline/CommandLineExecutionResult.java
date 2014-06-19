@@ -1,12 +1,12 @@
 package me.automationdomination.service.commandline;
 
-public class CommandLineOutput {
+public class CommandLineExecutionResult {
 
 	private final int returnValue;
 
 	private final String output;
 
-	public CommandLineOutput(final int returnValue, final String output) {
+	public CommandLineExecutionResult(final int returnValue, final String output) {
 		super();
 		this.returnValue = returnValue;
 		this.output = output;
