@@ -56,8 +56,8 @@ public class ThreadFixPublisher extends Recorder {
 			final Launcher launcher, 
 			final BuildListener listener) throws InterruptedException, IOException {
 		final PrintStream log = launcher.getListener().getLogger();
-		
-		// TODO: validate that environment was retrieved?
+
+        // TODO: validate that environment was retrieved?
 		final EnvVars envVars = build.getEnvironment(listener);
 		
 		// TODO: why doesn't this work as a member variable?
@@ -335,6 +335,7 @@ public class ThreadFixPublisher extends Recorder {
 		public String getTokenErrorTemplate() {
 			return tokenErrorTemplate;
 		}
+
 
 	}
 
