@@ -4,25 +4,32 @@ import hudson.AbortException;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.Launcher;
+import hudson.model.BuildListener;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
-import hudson.model.BuildListener;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
 import hudson.util.FormValidation;
+
+import java.io.IOException;
+import java.io.PrintStream;
+
+import javax.servlet.ServletException;
+
 import me.automationdomination.plugins.threadfix.service.JenkinsEnvironmentVariableParsingService;
 import me.automationdomination.plugins.threadfix.service.ThreadFixUploadService;
-import me.automationdomination.plugins.threadfix.validation.*;
+import me.automationdomination.plugins.threadfix.validation.ApacheCommonsUrlValidator;
+import me.automationdomination.plugins.threadfix.validation.ConfigurationValueValidator;
+import me.automationdomination.plugins.threadfix.validation.FileValidator;
+import me.automationdomination.plugins.threadfix.validation.NumericStringValidator;
+import me.automationdomination.plugins.threadfix.validation.SimpleStringValidator;
 import net.sf.json.JSONObject;
+
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
-
-import javax.servlet.ServletException;
-import java.io.IOException;
-import java.io.PrintStream;
 
 /**
  * Created with IntelliJ IDEA. User: bspruth Date: 3/22/14 Time: 12:05 AM To
@@ -56,8 +63,8 @@ public class ThreadFixPublisher extends Recorder {
 			final Launcher launcher, 
 			final BuildListener listener) throws InterruptedException, IOException {
 		final PrintStream log = launcher.getListener().getLogger();
-		
-		// TODO: validate that environment was retrieved?
+
+        // TODO: validate that environment was retrieved?
 		final EnvVars envVars = build.getEnvironment(listener);
 		
 		// TODO: why doesn't this work as a member variable?
@@ -320,6 +327,7 @@ public class ThreadFixPublisher extends Recorder {
 		public String getTokenErrorTemplate() {
 			return tokenErrorTemplate;
 		}
+
 
 	}
 
