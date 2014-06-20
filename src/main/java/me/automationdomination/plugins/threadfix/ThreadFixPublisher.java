@@ -99,14 +99,7 @@ public class ThreadFixPublisher extends Recorder {
 		log.println("retrieving global configurations");
 		
 		final DescriptorImpl descriptor = this.getDescriptor();
-		
-		
-		final String tfcli = descriptor.getTfcli();
-		final ConfigurationValueValidator tfcliValidator = descriptor.getTfcliValidator();
-		if (!tfcliValidator.isValid(tfcli))
-			throw new AbortException(String.format(descriptor.getTfcliErrorTemplate(), tfcli));
-		
-		log.println("using tfcli: " + tfcli);
+
 		
 		
 		final String threadFixServerUrl = descriptor.getUrl();
@@ -130,7 +123,7 @@ public class ThreadFixPublisher extends Recorder {
 		
 		// the scan file validator should have verified that this file exists already
 		log.println("uploading scan file");
-		final TfcliService threadFixUploadService = new TfcliService(tfcli, threadFixServerUrl, token);
+		final TfcliService threadFixUploadService = new TfcliService(threadFixServerUrl, token);
 		threadFixUploadService.uploadFile(parsedAppId, parsedScanFile);
 		
 
@@ -173,8 +166,7 @@ public class ThreadFixPublisher extends Recorder {
 	public static final class DescriptorImpl extends BuildStepDescriptor<Publisher> {
 		
 		private static final String DISPLAY_NAME = "Publish ThreadFix Scan";
-		
-		private static final String TFCLI_PARAMETER = "tfcli";
+
 		private static final String URL_PARAMETER = "url";
 		private static final String TOKEN_PARAMETER = "token";
 
@@ -185,11 +177,9 @@ public class ThreadFixPublisher extends Recorder {
 		 * <p>
 		 * If you don't want fields to be persisted, use <tt>transient</tt>.
 		 */
-		private String tfcli;
 		private String url;
 		private String token;
 		
-		private final ConfigurationValueValidator tfcliValidator = new FileValidator();
 		private final ConfigurationValueValidator threadFixServerUrlValidator = new ApacheCommonsUrlValidator();
 		private final ConfigurationValueValidator tokenValidator = new SimpleStringValidator();
 		
@@ -208,7 +198,7 @@ public class ThreadFixPublisher extends Recorder {
 		/**
 		 * Performs on-the-fly validation of the form fields 'tfcli'.
 		 * 
-		 * @param tfcli
+		 * @param url
 		 *            This parameter receives the value that the user has typed.
 		 * @return Indicates the outcome of the validation. This is sent to the
 		 *         browser.
@@ -217,13 +207,6 @@ public class ThreadFixPublisher extends Recorder {
 		 *         not prevent the form from being saved. It just means that a
 		 *         message will be displayed to the user.
 		 */
-		public FormValidation doCheckTfcli(@QueryParameter final String tfcli) throws IOException, ServletException {
-			if (!tfcliValidator.isValid(tfcli))
-				return FormValidation.error(String.format(tfcliErrorTemplate, tfcli));
-
-			return FormValidation.ok();
-		}
-
 		public FormValidation doCheckUrl(@QueryParameter final String url) throws IOException, ServletException {
 			if (!threadFixServerUrlValidator.isValid(url))
 				return FormValidation.error(String.format(threadFixServerUrlErrorTemplate, url));
@@ -260,12 +243,6 @@ public class ThreadFixPublisher extends Recorder {
 
 		@Override
 		public boolean configure(final StaplerRequest staplerRequest, final JSONObject formData) throws FormException {
-			tfcli = formData.getString(TFCLI_PARAMETER);
-			
-			if (!tfcliValidator.isValid(tfcli))
-				throw new FormException(String.format(tfcliErrorTemplate, tfcli), TFCLI_PARAMETER);
-			
-			
 			url = formData.getString(URL_PARAMETER);
 
 			if (!threadFixServerUrlValidator.isValid(url))
@@ -291,10 +268,6 @@ public class ThreadFixPublisher extends Recorder {
 		public String getDisplayName() {
 			return DISPLAY_NAME;
 		}
-		
-		public String getTfcli() {
-			return tfcli;
-		}
 
 		public String getUrl() {
 			return url;
@@ -302,10 +275,6 @@ public class ThreadFixPublisher extends Recorder {
 
 		public String getToken() {
 			return token;
-		}
-
-		public ConfigurationValueValidator getTfcliValidator() {
-			return tfcliValidator;
 		}
 
 		public ConfigurationValueValidator getThreadFixServerUrlValidator() {
