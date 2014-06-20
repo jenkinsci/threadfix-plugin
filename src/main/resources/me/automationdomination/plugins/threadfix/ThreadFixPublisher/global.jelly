@@ -11,6 +11,6 @@
     <f:entry title="ThreadFix Server API Key" description="ThreadFix Server's API Key" field="token">
       <f:password field="token"/>
     </f:entry>
-    <f:validateButton title="${%Test Connection}" progress="${%Testing...}" method="testConnection" with="tfcli,url,token"/>
+    <f:validateButton title="${%Test Connection}" progress="${%Testing...}" method="testConnection" with="url,token"/>
   </f:section>
 </j:jelly>

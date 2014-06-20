@@ -14,7 +14,6 @@ import hudson.tasks.Recorder;
 import hudson.util.FormValidation;
 
 import java.io.IOException;
-import java.io.PrintStream;
 
 import javax.servlet.ServletException;
 
@@ -27,15 +26,21 @@ import me.automationdomination.plugins.threadfix.validation.NumericStringValidat
 import me.automationdomination.plugins.threadfix.validation.SimpleStringValidator;
 import net.sf.json.JSONObject;
 
+import org.apache.log4j.Logger;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
+
+import com.denimgroup.threadfix.data.entities.Scan;
+import com.denimgroup.threadfix.remote.response.RestResponse;
 
 /**
  * Created with IntelliJ IDEA. User: bspruth Date: 3/22/14 Time: 12:05 AM To
  * change this template use File | Settings | File Templates.
  */
 public class ThreadFixPublisher extends Recorder {
+	
+	private static final Logger logger = Logger.getLogger(ThreadFixPublisher.class);
 	
 	private final String appId;
 	private final String scanFile;
@@ -62,41 +67,39 @@ public class ThreadFixPublisher extends Recorder {
 			final AbstractBuild<?, ?> build,
 			final Launcher launcher, 
 			final BuildListener listener) throws InterruptedException, IOException {
-		final PrintStream log = launcher.getListener().getLogger();
-
         // TODO: validate that environment was retrieved?
 		final EnvVars envVars = build.getEnvironment(listener);
 		
 		// TODO: why doesn't this work as a member variable?
 		final JenkinsEnvironmentVariableParsingService jenkinsEnvironmentVariableParsingService = new JenkinsEnvironmentVariableParsingService();
 		
-		log.println("beginning threadfix publisher execution");		
+		logger.info("beginning threadfix publisher execution");		
 		
 		
 		
-		log.println("raw app id: " + appId);
+		logger.info("raw app id: " + appId);
 
 		final String parsedAppId = jenkinsEnvironmentVariableParsingService.parseEnvironentVariables(envVars, appId);
 		
 		if (!appIdValidator.isValid(parsedAppId))
 			throw new AbortException(String.format(appIdErrorTemplate, appId));
 		
-		log.println("using app id: " + parsedAppId);
+		logger.info("using app id: " + parsedAppId);
 		
 		
 		
-		log.println("raw scan file: " + scanFile);
+		logger.info("raw scan file: " + scanFile);
 		
 		final String parsedScanFile = jenkinsEnvironmentVariableParsingService.parseEnvironentVariables(envVars, scanFile);
 		
 		if (!scanFileValidator.isValid(parsedScanFile))
 			throw new AbortException(String.format(scanFileErrorTemplate, scanFile));
 		
-		log.println("using scan file: " + parsedScanFile);
+		logger.info("using scan file: " + parsedScanFile);
 
 		
 		
-		log.println("retrieving global configurations");
+		logger.info("retrieving global configurations");
 		
 		final DescriptorImpl descriptor = this.getDescriptor();
 
@@ -107,7 +110,8 @@ public class ThreadFixPublisher extends Recorder {
 		if (!threadFixServerUrlValidator.isValid(threadFixServerUrl))
 			throw new AbortException(String.format(descriptor.getThreadFixServerUrlErrorTemplate(), threadFixServerUrl));
 		
-		log.println("using threadfix server url: " + threadFixServerUrl);
+		logger.info("using threadfix server url: " + threadFixServerUrl);
+		
 		
 		
 		// TODO: mask this token in the output?
@@ -117,18 +121,24 @@ public class ThreadFixPublisher extends Recorder {
 		if (!tokenValidator.isValid(token))
 			throw new AbortException(String.format(descriptor.getTokenErrorTemplate(), token));
 		
-		log.println("using token: " + token);
+		logger.info("using token: " + token);
 		
 		
 		
 		// the scan file validator should have verified that this file exists already
-		log.println("uploading scan file");
+		logger.info("uploading scan file");
 		final TfcliService threadFixUploadService = new TfcliService(threadFixServerUrl, token);
-		threadFixUploadService.uploadFile(parsedAppId, parsedScanFile);
+		final RestResponse<Scan> uploadFileResponse = threadFixUploadService.uploadFile(parsedAppId, parsedScanFile);
 		
-
+		if (uploadFileResponse.success) {
+			logger.info("scan file uploaded successfully!");
+		} else {
+			logger.error("scan file upload failed");
+		}
 		
-		log.println("threadfix publisher execution complete");
+		
+		
+		logger.info("threadfix publisher execution complete");
 
 		// returning true/false should be considered deprecated...
 		// throw an AbortException to indicate failure
@@ -183,7 +193,6 @@ public class ThreadFixPublisher extends Recorder {
 		private final ConfigurationValueValidator threadFixServerUrlValidator = new ApacheCommonsUrlValidator();
 		private final ConfigurationValueValidator tokenValidator = new SimpleStringValidator();
 		
-		private final String tfcliErrorTemplate = "threadfix-cli jar \"%s\" is invalid or file is unreadble";
 		private final String threadFixServerUrlErrorTemplate = "threadfix server url \"%s\" is invalid";
 		private final String tokenErrorTemplate = "threadfix server api key \"%s\" is invalid";
 
@@ -230,11 +239,11 @@ public class ThreadFixPublisher extends Recorder {
 				// http://automationdomination.me/threadfix/rest/teams?apiKey=oNgiwdVwHwkFAUX22LJeExwrTtfher8q5W26ihgkBI
 				return FormValidation.ok("ThreadFix connection success!");
 			} catch (Exception e) {
-				return FormValidation.error("ThreadFix connection error : "
-						+ e.getMessage());
+				return FormValidation.error("ThreadFix connection error : " + e.getMessage());
 			}
 		}
 
+		@Override
 		public boolean isApplicable(@SuppressWarnings("rawtypes") final Class<? extends AbstractProject> jobType) {
 			// Indicates that this builder can be used with all kinds of project
 			// types applicable to all project types
@@ -285,10 +294,6 @@ public class ThreadFixPublisher extends Recorder {
 			return tokenValidator;
 		}
 
-		public String getTfcliErrorTemplate() {
-			return tfcliErrorTemplate;
-		}
-
 		public String getThreadFixServerUrlErrorTemplate() {
 			return threadFixServerUrlErrorTemplate;
 		}
@@ -296,7 +301,6 @@ public class ThreadFixPublisher extends Recorder {
 		public String getTokenErrorTemplate() {
 			return tokenErrorTemplate;
 		}
-
 
 	}
 
