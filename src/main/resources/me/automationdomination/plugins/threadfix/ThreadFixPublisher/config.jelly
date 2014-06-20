@@ -1,9 +1,11 @@
 <?xml version="1.0"?>
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
   <f:entry title="Application ID" description="The application ID on the ThreadFix server" field="appId">
-    <f:textbox value="${it.appId}"/>
+    <f:select />
   </f:entry>
   <f:entry title="Scan filename location" description="Scan filename with relative path in the job's workspace." field="scanFile">
     <f:textbox value="${it.scanFile}"/>
   </f:entry>
 </j:jelly>
+
+

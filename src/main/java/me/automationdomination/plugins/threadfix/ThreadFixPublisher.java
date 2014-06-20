@@ -12,6 +12,7 @@ import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
 import hudson.util.FormValidation;
+import hudson.util.ListBoxModel;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -32,6 +33,8 @@ import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
+import com.denimgroup.threadfix.data.entities.Application;
+import com.denimgroup.threadfix.data.entities.Organization;
 import com.denimgroup.threadfix.data.entities.Scan;
 import com.denimgroup.threadfix.remote.response.RestResponse;
 
@@ -130,8 +133,9 @@ public class ThreadFixPublisher extends Recorder {
 		
 		// the scan file validator should have verified that this file exists already
 		log.println("uploading scan file");
-		final TfcliService threadFixUploadService = new TfcliService(threadFixServerUrl, token);
-		final RestResponse<Scan> uploadFileResponse = threadFixUploadService.uploadFile(parsedAppId, parsedScanFile);
+		// TODO: does this need to be a member variable?  part of the descriptor?  etc...
+		final TfcliService tfcliService = new TfcliService(threadFixServerUrl, token);
+		final RestResponse<Scan> uploadFileResponse = tfcliService.uploadFile(parsedAppId, parsedScanFile);
 		
 		if (uploadFileResponse.success) {
 			log.println("scan file uploaded successfully!");
@@ -246,6 +250,7 @@ public class ThreadFixPublisher extends Recorder {
 			}
 		}
 
+
 		@Override
 		public boolean isApplicable(@SuppressWarnings("rawtypes") final Class<? extends AbstractProject> jobType) {
 			// Indicates that this builder can be used with all kinds of project
@@ -272,6 +277,26 @@ public class ThreadFixPublisher extends Recorder {
 			
 			return super.configure(staplerRequest, formData);
 		}
+		
+		public ListBoxModel doFillAppIdItems() {
+			final ListBoxModel appIds = new ListBoxModel();
+			
+			final TfcliService tfcliService = new TfcliService(url, token);
+			
+			RestResponse<Organization[]> getAllTeamsResponse = tfcliService.getAllTeams();
+			
+			if (getAllTeamsResponse.success) {
+				for (final Organization organization : getAllTeamsResponse.object) {
+					for (final Application application : organization.getActiveApplications()) {
+						appIds.add(organization.getName() + " - " + application.getName(), Integer.toString(application.getId()));
+					}
+				}
+			} else {
+				appIds.add("ERROR RETRIEVING TEAMS", "-1");
+			}
+
+            return appIds;
+        }
 
 		/**
 		 * This human readable name is used in the configuration screen.
