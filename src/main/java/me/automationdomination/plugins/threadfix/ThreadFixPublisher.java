@@ -14,6 +14,7 @@ import hudson.tasks.Recorder;
 import hudson.util.FormValidation;
 
 import java.io.IOException;
+import java.io.PrintStream;
 
 import javax.servlet.ServletException;
 
@@ -67,39 +68,41 @@ public class ThreadFixPublisher extends Recorder {
 			final AbstractBuild<?, ?> build,
 			final Launcher launcher, 
 			final BuildListener listener) throws InterruptedException, IOException {
+		final PrintStream log = launcher.getListener().getLogger();
+		
         // TODO: validate that environment was retrieved?
 		final EnvVars envVars = build.getEnvironment(listener);
 		
 		// TODO: why doesn't this work as a member variable?
 		final JenkinsEnvironmentVariableParsingService jenkinsEnvironmentVariableParsingService = new JenkinsEnvironmentVariableParsingService();
 		
-		logger.info("beginning threadfix publisher execution");		
+		log.println("beginning threadfix publisher execution");		
 		
 		
 		
-		logger.info("raw app id: " + appId);
+		log.println("raw app id: " + appId);
 
 		final String parsedAppId = jenkinsEnvironmentVariableParsingService.parseEnvironentVariables(envVars, appId);
 		
 		if (!appIdValidator.isValid(parsedAppId))
 			throw new AbortException(String.format(appIdErrorTemplate, appId));
 		
-		logger.info("using app id: " + parsedAppId);
+		log.println("using app id: " + parsedAppId);
 		
 		
 		
-		logger.info("raw scan file: " + scanFile);
+		log.println("raw scan file: " + scanFile);
 		
 		final String parsedScanFile = jenkinsEnvironmentVariableParsingService.parseEnvironentVariables(envVars, scanFile);
 		
 		if (!scanFileValidator.isValid(parsedScanFile))
 			throw new AbortException(String.format(scanFileErrorTemplate, scanFile));
 		
-		logger.info("using scan file: " + parsedScanFile);
+		log.println("using scan file: " + parsedScanFile);
 
 		
 		
-		logger.info("retrieving global configurations");
+		log.println("retrieving global configurations");
 		
 		final DescriptorImpl descriptor = this.getDescriptor();
 
@@ -110,7 +113,7 @@ public class ThreadFixPublisher extends Recorder {
 		if (!threadFixServerUrlValidator.isValid(threadFixServerUrl))
 			throw new AbortException(String.format(descriptor.getThreadFixServerUrlErrorTemplate(), threadFixServerUrl));
 		
-		logger.info("using threadfix server url: " + threadFixServerUrl);
+		log.println("using threadfix server url: " + threadFixServerUrl);
 		
 		
 		
@@ -121,24 +124,24 @@ public class ThreadFixPublisher extends Recorder {
 		if (!tokenValidator.isValid(token))
 			throw new AbortException(String.format(descriptor.getTokenErrorTemplate(), token));
 		
-		logger.info("using token: " + token);
+		log.println("using token: " + token);
 		
 		
 		
 		// the scan file validator should have verified that this file exists already
-		logger.info("uploading scan file");
+		log.println("uploading scan file");
 		final TfcliService threadFixUploadService = new TfcliService(threadFixServerUrl, token);
 		final RestResponse<Scan> uploadFileResponse = threadFixUploadService.uploadFile(parsedAppId, parsedScanFile);
 		
 		if (uploadFileResponse.success) {
-			logger.info("scan file uploaded successfully!");
+			log.println("scan file uploaded successfully!");
 		} else {
-			logger.error("scan file upload failed");
+			log.println("scan file upload failed");
 		}
 		
 		
 		
-		logger.info("threadfix publisher execution complete");
+		log.println("threadfix publisher execution complete");
 
 		// returning true/false should be considered deprecated...
 		// throw an AbortException to indicate failure
