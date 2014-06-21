@@ -1,4 +1,4 @@
-<project 
+<project
 	xmlns="http://maven.apache.org/POM/4.0.0" 
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="
@@ -81,9 +81,29 @@
 					<target>1.7</target>
 				</configuration>
 			</plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-install-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>install-threadfix-cli</id>
+                        <phase>initialize</phase>
+                        <goals>
+                            <goal>install-file</goal>
+                        </goals>
+                        <configuration>
+                            <file>${project.basedir}/lib/threadfix-cli-${threadfix.cli.version}-jar-with-dependencies.jar</file>
+                            <groupId>com.denimgroup.threadfix</groupId>
+                            <artifactId>threadfix-cli</artifactId>
+                            <version>${threadfix.cli.version}</version>
+                            <packaging>jar</packaging>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
 		</plugins>
 	</build>
-	
+
     <dependencies>
         <dependency>
             <groupId>com.sun.jersey</groupId>
