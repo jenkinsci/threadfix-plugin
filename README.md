@@ -13,7 +13,7 @@ A [ThreadFix server](http://www.threadfix.org/download/) deployment with an *API
 ![Global Configuration for ThreadFix Jenkins Plugin](http://automationdomination.me/images/ThreadFixJenkinsGlobalConfig.png)
 
 ### Jenkins Project Config ###
-![Global Configuration for ThreadFix Jenkins Plugin](http://automationdomination.me/images/ThreadFixJenkinsProjectConfig.png)
+![Project Configuration for ThreadFix Jenkins Plugin](http://automationdomination.me/images/ThreadFixJenkinsProjectConfig.png)
 
 ### Contact ###
 otto _[at]_ automationdomination _[dot]_ me
