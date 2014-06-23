@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+  <!--
+    This Jelly script is used to produce the global configuration option.
+  -->
+  <f:section title="ThreadFix">
+    <!-- defaults can be added for these textboxes (e.g., <f:textbox default="something"/>) -->
+    <f:entry title="ThreadFix Server URL" description="URL for your ThreadFix Server" field="url">
+      <f:textbox/>
+    </f:entry>
+    <f:entry title="ThreadFix Server API Key" description="ThreadFix Server's API Key" field="token">
+      <f:password field="token"/>
+    </f:entry>
+    <f:validateButton title="${%Test Connection}" progress="${%Testing...}" method="testConnection" with="url,token"/>
+  </f:section>
+</j:jelly>
