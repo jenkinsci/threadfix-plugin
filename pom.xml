@@ -39,13 +39,11 @@
 		</developer>
 	</developers>
 	
-    <!--
     <scm>
-        <connection>scm:git:ssh://github.com/automationdomination/threadfix-jenkins-plugin.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/automationdomination/threadfix-jenkins-plugin.git</developerConnection>
-        <url>https://github.com/automationdomination/threadfix-jenkins-plugin</url>
+        <connection>scm:git:ssh://github.com/automationdomination/threadfix-plugin.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/automationdomination/threadfix-plugin.git</developerConnection>
+        <url>https://github.com/automationdomination/threadfix-plugin</url>
     </scm>
-    -->
     
     <!-- get every artifact through repo.jenkins-ci.org, which proxies all the artifacts that we need -->
     <repositories>
