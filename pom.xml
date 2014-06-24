@@ -6,6 +6,8 @@
 		http://maven.apache.org/maven-v4_0_0.xsd">
 		
 	<modelVersion>4.0.0</modelVersion>
+	<description>Uploads any supported ThreadFix scan file to your ThreadFix server</description>
+	<url>http://wiki.jenkins-ci.org/display/JENKINS/Threadfix+Plugin</url>
 	
 	<parent>
 		<!-- which version of Jenkins is this plugin built against? -->
@@ -14,9 +16,10 @@
 		<version>1.509.4</version>
 	</parent>
 
-	<groupId>me.automationdomination</groupId>
 	<artifactId>threadfix</artifactId>
 	<version>1.0</version>
+	<name>ThreadFix Plugin</name>
+	<!-- which version of Jenkins is this plugin built against? -->
 	<packaging>hpi</packaging>
 
     <licenses>
@@ -39,12 +42,13 @@
 		</developer>
 	</developers>
 	
+    <!-- Added to publish on https://wiki.jenkins-ci.org/display/JENKINS/Plugins -->
     <scm>
-        <connection>scm:git:ssh://github.com/automationdomination/threadfix-plugin.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/automationdomination/threadfix-plugin.git</developerConnection>
-        <url>https://github.com/automationdomination/threadfix-plugin</url>
+      <connection>scm:git:ssh://github.com/jenkinsci/threadfix-plugin.git</connection>
+      <developerConnection>scm:git:ssh://git@github.com/jenkinsci/threadfix-plugin.git</developerConnection>
+      <url>https://github.com/jenkinsci/threadfix-plugin</url>
     </scm>
-    
+
     <!-- get every artifact through repo.jenkins-ci.org, which proxies all the artifacts that we need -->
     <repositories>
         <repository>
@@ -146,4 +150,7 @@
         </dependency>
     </dependencies>
 
+    <properties>
+  	<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 </project>
