@@ -86,32 +86,6 @@
 					<target>1.7</target>
 				</configuration>
 			</plugin>
-
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>exec-maven-plugin</artifactId>
-				<inherited>false</inherited>
-				<executions>
-				  <execution>
-					<id>install-threadfix-cli</id>
-					<phase>validate</phase>
-					<goals>
-					  <goal>exec</goal>
-					</goals>
-				  </execution>
-				</executions>
-				 <configuration>
-				  <executable>mvn</executable>
-				    <arguments>
-					<argument>install:install-file</argument>
-					<argument>-Dfile=${project.basedir}/lib/threadfix-cli-${threadfix.cli.version}-jar-with-dependencies.jar</argument>
-					<argument>-DgroupId=com.denimgroup.threadfix</argument>
-					<argument>-DartifactId=threadfix-cli</argument>
-					<argument>-Dversion=${threadfix.cli.version}</argument>
-					<argument>-Dpackaging=jar</argument>
-				  </arguments>
-				 </configuration>
-			</plugin>
 		</plugins>
 	</build>
 
