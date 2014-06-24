@@ -46,13 +46,6 @@
     </scm>
     
     <!-- get every artifact through repo.jenkins-ci.org, which proxies all the artifacts that we need -->
-    <repositories>
-        <repository>
-            <id>repo.jenkins-ci.org</id>
-            <url>http://repo.jenkins-ci.org/public/</url>
-        </repository>
-    </repositories>
-
     <pluginRepositories>
         <pluginRepository>
             <id>repo.jenkins-ci.org</id>
@@ -62,6 +55,7 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+<main.basedir>${project.basedir}</main.basedir>
         <jersey.client.version>1.16</jersey.client.version>
         <joda.time.version>2.1</joda.time.version>
         <commons.validator.version>1.4.0</commons.validator.version>
@@ -79,30 +73,41 @@
 					<target>1.7</target>
 				</configuration>
 			</plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-install-plugin</artifactId>
+
+<plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <inherited>false</inherited>
                 <executions>
                     <execution>
                         <id>install-threadfix-cli</id>
-                        <phase>initialize</phase>
+                        <phase>validate</phase>
                         <goals>
-                            <goal>install-file</goal>
+                            <goal>exec</goal>
                         </goals>
-                        <configuration>
-                            <file>${project.basedir}/lib/threadfix-cli-${threadfix.cli.version}-jar-with-dependencies.jar</file>
-                            <groupId>com.denimgroup.threadfix</groupId>
-                            <artifactId>threadfix-cli</artifactId>
-                            <version>${threadfix.cli.version}</version>
-                            <packaging>jar</packaging>
-                        </configuration>
                     </execution>
                 </executions>
-            </plugin>
+                <configuration>
+                    <executable>mvn</executable>
+                    <arguments>
+                        <argument>install:install-file</argument>
+			<argument>-Dfile=${project.basedir}/lib/threadfix-cli-${threadfix.cli.version}-jar-with-dependencies.jar</argument>
+                        <argument>-DgroupId=com.denimgroup.threadfix</argument>
+                        <argument>-DartifactId=threadfix-cli</argument>
+                        <argument>-Dversion=${threadfix.cli.version}</argument>
+                        <argument>-Dpackaging=jar</argument>
+                    </arguments>
+                </configuration>
+</plugin>
 		</plugins>
 	</build>
 
     <dependencies>
+        <dependency>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>animal-sniffer-annotations</artifactId>
+            <version>1.9</version>
+        </dependency>
         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-client</artifactId>
@@ -143,6 +148,8 @@
         			<artifactId>annotations</artifactId>
         		</exclusion>
         	</exclusions>
+   <scope>system</scope>
+    <systemPath>${project.basedir}/lib/threadfix-cli-${threadfix.cli.version}-jar-with-dependencies.jar</systemPath>
         </dependency>
     </dependencies>
 
