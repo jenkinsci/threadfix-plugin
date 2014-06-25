@@ -12,7 +12,7 @@
 	</parent>
 
 	<artifactId>threadfix</artifactId>
-	<version>1.1-SNAPSHOT</version>
+	<version>1.4-SNAPSHOT</version>
 	<name>ThreadFix Plugin</name>
 	<!-- which version of Jenkins is this plugin built against? -->
 	<packaging>hpi</packaging>
@@ -46,16 +46,16 @@
 
     <!-- get every artifact through repo.jenkins-ci.org, which proxies all the artifacts that we need -->
     <repositories>
+       <!-- Add local repo for threadfix-cli dep -->
+         <repository>
+            <id>threadfix-cli.local</id>
+            <name>threadfix-cli</name>
+            <url>file:${project.basedir}/lib</url>
+        </repository>
         <repository>
             <id>repo.jenkins-ci.org</id>
             <url>http://repo.jenkins-ci.org/public/</url>
         </repository>
-        <!-- Add local repo for threadfix-cli dep -->
-         <repository>
-	    <id>threadfix-cli.local</id>
-	    <name>threadfix-cli</name>
-	    <url>file:${project.basedir}/lib</url>
-	</repository>
     </repositories>
 
     <pluginRepositories>
@@ -97,12 +97,6 @@
 					<target>1.7</target>
 				</configuration>
 			</plugin>
-			<plugin>
-                        <artifactId>maven-release-plugin</artifactId>
-                        <configuration>
-                                <goals>deploy</goals>
-                        </configuration>
-	                </plugin>
 		</plugins>
 	</build>
 
