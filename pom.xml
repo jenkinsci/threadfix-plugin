@@ -46,35 +46,25 @@
 
     <!-- get every artifact through repo.jenkins-ci.org, which proxies all the artifacts that we need -->
     <repositories>
-       <!-- Add local repo for threadfix-cli dep -->
+        <repository>
+            <id>repo.jenkins-ci.org</id>
+            <url>http://repo.jenkins-ci.org/public/</url>
+        </repository>
+        <!-- Add local repo for threadfix-cli dep -->
          <repository>
             <id>threadfix-cli.local</id>
             <name>threadfix-cli</name>
             <url>file:${project.basedir}/lib</url>
         </repository>
-        <repository>
-            <id>repo.jenkins-ci.org</id>
-            <url>http://repo.jenkins-ci.org/public/</url>
-        </repository>
     </repositories>
 
     <pluginRepositories>
+    </repositories>
         <pluginRepository>
             <id>repo.jenkins-ci.org</id>
             <url>http://repo.jenkins-ci.org/public/</url>
         </pluginRepository>
-        <pluginRepository>
-            <id>threadfix-cli.local</id>
-	    <url>file:${project.basedir}/lib</url>
-	</pluginRepository>
     </pluginRepositories>
-
-    <distributionManagement>
-	<repository>
-	    <id>maven.jenkins-ci.org</id>
-	    <url>http://maven.jenkins-ci.org/content/repositories/releases/</url>
-	</repository>
-    </distributionManagement>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
