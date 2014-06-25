@@ -237,7 +237,6 @@ public class ThreadFixPublisher extends Recorder {
 
 			try {
 				// TODO add test - tfcli
-				// http://automationdomination.me/threadfix/rest/teams?apiKey=oNgiwdVwHwkFAUX22LJeExwrTtfher8q5W26ihgkBI
                 final TfcliService tfcliService = new TfcliService(url, token);
 
                 RestResponse<Organization[]> getAllTeamsResponse = tfcliService.getAllTeams();

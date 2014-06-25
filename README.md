@@ -5,6 +5,7 @@
 ### Features ###
 - Upload any supported scan file(s) from your Jenkins Slave/Master to your ThreadFix web server using your ThreadFix API Keys.
 - Ability to specify any scan filename under the Project's workspace using Jenkin's environmental variables.
+- ThreadFix [REST API](https://github.com/denimgroup/threadfix/wiki/Threadfix-REST-Interface) is used for all communication from the Jenkins Server.
 
 ### Installation & Setup ###
 A [ThreadFix server](http://www.threadfix.org/download/) deployment with an *API Key* created from your ThreadFix installation.
