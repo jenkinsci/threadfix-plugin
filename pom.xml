@@ -123,7 +123,7 @@
             <artifactId>threadfix-cli</artifactId>
             <version>${threadfix.cli.version}</version>
 	    <scope>system</scope>
-	    <systemPath>${basedir}repo/com/denimgroup/threadfix/threadfix-cli/2.0FINAL-SNAPSHOT/threadfix-cli-2.0FINAL-SNAPSHOT-jar-with-dependencies.jar</systemPath>
+	    <systemPath>${basedir}/repo/com/denimgroup/threadfix/threadfix-cli/2.0FINAL-SNAPSHOT/threadfix-cli-2.0FINAL-SNAPSHOT-jar-with-dependencies.jar</systemPath>
         </dependency>
     </dependencies>
 
