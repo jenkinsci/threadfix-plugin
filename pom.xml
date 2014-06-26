@@ -13,7 +13,7 @@
     <artifactId>threadfix</artifactId>
 
     <name>ThreadFix Plugin</name>
-	<version>1.4.2-SNAPSHOT</version>
+	<version>1.4.2</version>
     <inceptionYear>2014</inceptionYear>
 	<packaging>hpi</packaging>
 
@@ -130,7 +130,7 @@
         <connection>scm:git:ssh://github.com/jenkinsci/threadfix-plugin.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/jenkinsci/threadfix-plugin.git</developerConnection>
         <url>https://github.com/jenkinsci/threadfix-plugin</url>
-      <tag>HEAD</tag>
+      <tag>threadfix-1.4.2</tag>
   </scm>
 
     <!-- get every artifact through repo.jenkins-ci.org, which proxies all the artifacts that we need -->
