@@ -223,8 +223,11 @@ public class ThreadFixPublisher extends Recorder {
 		}
 
 		public FormValidation doCheckToken(@QueryParameter final String token) throws IOException, ServletException {
-			if (!tokenValidator.isValid(token))
-				return FormValidation.error(String.format(tokenErrorTemplate, token));
+            if (!tokenValidator.isValid(token))
+                return FormValidation.error(String.format(tokenErrorTemplate, token));
+            //token lengths are 44 alpha-numeric
+            if (tokenErrorTemplate.length() < = 44)
+                return FormValidation.warning("Isn't the key too short?");
 
 			return FormValidation.ok();
 		}
