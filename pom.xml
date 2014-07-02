@@ -16,7 +16,9 @@
 
 	<groupId>me.automationdomination</groupId>
 	<artifactId>threadfix</artifactId>
-	<version>1.0-SNAPSHOT</version>
+	<name>ThreadFix Plugin</name>
+	<version>1.4.3-SNAPSHOT</version>
+	<inceptionYear>2014</inceptionYear>
 	<packaging>hpi</packaging>
 
     <licenses>
