@@ -6,7 +6,11 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class JenkinsEnvironmentVariableParsingService {
-	
+
+    /* TODO: neeed to add compatability for windows
+    * extending on EnvVars rather than a replace all
+    * https://github.com/jenkinsci/email-ext-plugin/blob/master/src/main/java/hudson/plugins/emailext/EmailRecipientUtils.java
+    */	
 	private final Pattern environmentVariablePattern = Pattern.compile("\\$\\{.+?\\}");
 	
 	public String parseEnvironentVariables(final EnvVars envVars, final String value) {
