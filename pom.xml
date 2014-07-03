@@ -41,31 +41,6 @@
 		</developer>
 	</developers>
 	
-    <scm>
-        <connection>scm:git:ssh://github.com/automationdomination/threadfix-plugin.git</connection>
-        <developerConnection>scm:git:ssh://git@github.com/automationdomination/threadfix-plugin.git</developerConnection>
-        <url>https://github.com/automationdomination/threadfix-plugin</url>
-    </scm>
-
-    <repositories>
-        <repository>
-            <id>repo.jenkins-ci.org</id>
-            <url>http://repo.jenkins-ci.org/public/</url>
-        </repository>
-        <repository>
-            <id>threadfix.project</id>
-            <url>file:${basedir}/repo</url>
-        </repository>
-    </repositories>
-
-    <!-- get every artifact through repo.jenkins-ci.org, which proxies all the artifacts that we need -->
-    <pluginRepositories>
-        <pluginRepository>
-            <id>repo.jenkins-ci.org</id>
-            <url>http://repo.jenkins-ci.org/public/</url>
-        </pluginRepository>
-    </pluginRepositories>
-
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jersey.client.version>1.16</jersey.client.version>
@@ -140,10 +115,10 @@
             <version>${joda.time.version}</version>
         </dependency>
         <dependency>
-			<groupId>commons-validator</groupId>
-			<artifactId>commons-validator</artifactId>
-			<version>${commons.validator.version}</version>
-		</dependency>
+	    <groupId>commons-validator</groupId>
+	    <artifactId>commons-validator</artifactId>
+	    <version>${commons.validator.version}</version>
+	</dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
@@ -155,10 +130,34 @@
             <version>${animal.sniffer.annotations}</version>
         </dependency>
         <dependency>
-        	<groupId>com.denimgroup.threadfix</groupId>
-        	<artifactId>threadfix-cli</artifactId>
-        	<version>${threadfix.cli.version}</version>
+            <groupId>com.denimgroup.threadfix</groupId>
+            <artifactId>threadfix-cli</artifactId>
+            <version>${threadfix.cli.version}</version>
         </dependency>
     </dependencies>
+    
+    <scm>
+        <connection>scm:git:ssh://github.com/automationdomination/threadfix-plugin.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/automationdomination/threadfix-plugin.git</developerConnection>
+        <url>https://github.com/automationdomination/threadfix-plugin</url>
+    </scm>
 
+    <repositories>
+        <repository>
+            <id>repo.jenkins-ci.org</id>
+            <url>http://repo.jenkins-ci.org/public/</url>
+        </repository>
+        <repository>
+            <id>threadfix.project</id>
+            <url>file:${basedir}/repo</url>
+        </repository>
+    </repositories>
+
+    <!-- get every artifact through repo.jenkins-ci.org, which proxies all the artifacts that we need -->
+    <pluginRepositories>
+        <pluginRepository>
+            <id>repo.jenkins-ci.org</id>
+            <url>http://repo.jenkins-ci.org/public/</url>
+        </pluginRepository>
+    </pluginRepositories>
 </project>
