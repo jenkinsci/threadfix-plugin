@@ -15,7 +15,7 @@
 	</parent>
 
 	<groupId>me.automationdomination</groupId>
-	<artifactId>threadfix</artifactId>
+	<artifactId>threadfix-plugin</artifactId>
 	<name>ThreadFix Plugin</name>
 	<version>1.4.3-SNAPSHOT</version>
 	<inceptionYear>2014</inceptionYear>
