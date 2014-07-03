@@ -11,11 +11,10 @@
 		<version>1.509.4</version>
 	</parent>
     <artifactId>threadfix</artifactId>
-
     <name>ThreadFix Plugin</name>
-	<version>1.4.3-SNAPSHOT</version>
+    <version>1.4.3-SNAPSHOT</version>
     <inceptionYear>2014</inceptionYear>
-	<packaging>hpi</packaging>
+    <packaging>hpi</packaging>
 
     <licenses>
         <license>
@@ -44,7 +43,6 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <!--<basedir>${project.basedir}../</basedir>-->
         <jersey.client.version>1.16</jersey.client.version>
         <joda.time.version>2.1</joda.time.version>
         <commons.validator.version>1.4.0</commons.validator.version>
@@ -55,6 +53,14 @@
 
     <build>
         <plugins>
+            <plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-compiler-plugin</artifactId>
+		<configuration>
+		     <source>1.7</source>
+		     <target>1.7</target>
+		</configuration>
+	    </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-release-plugin</artifactId>
@@ -121,7 +127,7 @@
         <dependency>
             <groupId>com.denimgroup.threadfix</groupId>
             <artifactId>threadfix-cli</artifactId>
-            <version>2.0FINAL-SNAPSHOT</version>
+            <version>${threadfix.cli.version}</version>
         </dependency>
     </dependencies>
 
