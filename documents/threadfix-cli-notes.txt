@@ -12,4 +12,4 @@ https://github.com/denimgroup/threadfix
      - file, groupId, artifactId, etc. must be accurate with what is in the ThreadFix pom
      - version must match what is being used in the plugin pom
 
-   mvn install:install-file  -Dfile=<path-to-file> -DgroupId=com.denimgroup.threadfix -DartifactId=threadfix-cli -Dversion=2.0FINAL -Dpackaging=jar -Dmaven.repo.local=repo
+   mvn org.apache.maven.plugins:maven-install-plugin:2.3.1:install-file  -Dfile=<path-to-file> -DgroupId=com.denimgroup.threadfix -DartifactId=threadfix-cli -Dversion=2.0FINAL -Dpackaging=jar -DlocalRepositoryPath=repo
