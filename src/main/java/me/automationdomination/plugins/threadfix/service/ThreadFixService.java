@@ -6,14 +6,14 @@ import com.denimgroup.threadfix.remote.ThreadFixRestClient;
 import com.denimgroup.threadfix.remote.ThreadFixRestClientImpl;
 import com.denimgroup.threadfix.remote.response.RestResponse;
 
-public class TfcliService {
+public class ThreadFixService {
 
 	private final String url;
 	private final String token;
 	
 	private final ThreadFixRestClient threadFixRestClient = new ThreadFixRestClientImpl();
 
-	public TfcliService(
+	public ThreadFixService(
 			final String url,
 			final String token) {
 		super();

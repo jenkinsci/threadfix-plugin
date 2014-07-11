@@ -21,7 +21,7 @@ import javax.servlet.ServletException;
 
 import me.automationdomination.plugins.threadfix.service.EnvironmentVariableParsingService;
 import me.automationdomination.plugins.threadfix.service.LinuxEnvironmentVariableParsingService;
-import me.automationdomination.plugins.threadfix.service.TfcliService;
+import me.automationdomination.plugins.threadfix.service.ThreadFixService;
 import me.automationdomination.plugins.threadfix.service.WindowsEnvironmentVariableParsingService;
 import me.automationdomination.plugins.threadfix.validation.ApacheCommonsUrlValidator;
 import me.automationdomination.plugins.threadfix.validation.ApiKeyStringValidator;
@@ -145,7 +145,7 @@ public class ThreadFixPublisher extends Recorder {
 		// the scan file validator should have verified that this file exists already
 		log.println("uploading scan file");
 		// TODO: does this need to be a member variable?  part of the descriptor?  etc...
-		final TfcliService tfcliService = new TfcliService(threadFixServerUrl, token);
+		final ThreadFixService tfcliService = new ThreadFixService(threadFixServerUrl, token);
 		final RestResponse<Scan> uploadFileResponse = tfcliService.uploadFile(parsedAppId, parsedScanFile);
 		
 		if (uploadFileResponse.success) {
@@ -250,25 +250,17 @@ public class ThreadFixPublisher extends Recorder {
 			return FormValidation.ok();
 		}
 
-		public FormValidation doTestConnection(
-				@QueryParameter final String url,
-				@QueryParameter final String token) throws IOException,
-				ServletException {
-
-
-			try {
-				// TODO add test - tfcli
-				// http://automationdomination.me/threadfix/rest/teams?apiKey=oNgiwdVwHwkFAUX22LJeExwrTtfher8q5W26ihgkBI
-                final TfcliService tfcliService = new TfcliService(url, token);
-
-                RestResponse<Organization[]> getAllTeamsResponse = tfcliService.getAllTeams();
-
-                return FormValidation.ok("ThreadFix connection success!");
-			} catch (Exception e) {
-				return FormValidation.error("ThreadFix connection error : " + e.getMessage());
+		public FormValidation doTestConnection(@QueryParameter final String url, @QueryParameter final String token) throws IOException, ServletException {
+			final ThreadFixService tfcliService = new ThreadFixService(url, token);
+			
+			final RestResponse<Organization[]> getAllTeamsResponse = tfcliService.getAllTeams();
+			
+			if (getAllTeamsResponse.success) {
+				return FormValidation.ok("ThreadFix connection success!");
+			} else {
+				return FormValidation.error("Unable to connect to ThreadFix server");
 			}
 		}
-
 
 		@Override
 		public boolean isApplicable(@SuppressWarnings("rawtypes") final Class<? extends AbstractProject> jobType) {
@@ -290,9 +282,7 @@ public class ThreadFixPublisher extends Recorder {
 			if (!(simpleStringValidator.isValid(token) && apiKeyStringValidator.isValid(token)))
 				throw new FormException(String.format(tokenErrorTemplate, token), TOKEN_PARAMETER);
 			
-			
 			save();
-
 			
 			return super.configure(staplerRequest, formData);
 		}
@@ -300,9 +290,9 @@ public class ThreadFixPublisher extends Recorder {
 		public ListBoxModel doFillAppIdItems() {
 			final ListBoxModel appIds = new ListBoxModel();
 			
-			final TfcliService tfcliService = new TfcliService(url, token);
+			final ThreadFixService threadFixSErvice = new ThreadFixService(url, token);
 			
-			RestResponse<Organization[]> getAllTeamsResponse = tfcliService.getAllTeams();
+			final RestResponse<Organization[]> getAllTeamsResponse = threadFixSErvice.getAllTeams();
 			
 			if (getAllTeamsResponse.success) {
 				for (final Organization organization : getAllTeamsResponse.object) {
