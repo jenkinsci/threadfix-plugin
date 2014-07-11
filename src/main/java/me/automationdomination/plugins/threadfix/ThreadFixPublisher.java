@@ -124,10 +124,6 @@ public class ThreadFixPublisher extends Recorder {
 		if (!tokenValidator.isValid(token))
 			throw new AbortException(String.format(descriptor.getTokenErrorTemplate(), token));
 		
-		log.println("using token: " + token);
-		
-		
-		
 		// the scan file validator should have verified that this file exists already
 		log.println("uploading scan file");
 		// TODO: does this need to be a member variable?  part of the descriptor?  etc...
