@@ -1,42 +1,47 @@
 package me.automationdomination.plugins.threadfix;
 
-import com.denimgroup.threadfix.data.entities.Application;
-import com.denimgroup.threadfix.data.entities.Organization;
-import com.denimgroup.threadfix.data.entities.Scan;
-import com.denimgroup.threadfix.remote.response.RestResponse;
 import hudson.AbortException;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.Launcher;
+import hudson.model.BuildListener;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
-import hudson.model.BuildListener;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
+
+import java.io.IOException;
+import java.io.PrintStream;
+
+import javax.servlet.ServletException;
+
 import me.automationdomination.plugins.threadfix.service.JenkinsEnvironmentVariableParsingService;
 import me.automationdomination.plugins.threadfix.service.TfcliService;
-import me.automationdomination.plugins.threadfix.validation.*;
+import me.automationdomination.plugins.threadfix.validation.ApacheCommonsUrlValidator;
+import me.automationdomination.plugins.threadfix.validation.ConfigurationValueValidator;
+import me.automationdomination.plugins.threadfix.validation.FileValidator;
+import me.automationdomination.plugins.threadfix.validation.NumericStringValidator;
+import me.automationdomination.plugins.threadfix.validation.SimpleStringValidator;
 import net.sf.json.JSONObject;
-import org.apache.log4j.Logger;
+
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
-import javax.servlet.ServletException;
-import java.io.IOException;
-import java.io.PrintStream;
+import com.denimgroup.threadfix.data.entities.Application;
+import com.denimgroup.threadfix.data.entities.Organization;
+import com.denimgroup.threadfix.data.entities.Scan;
+import com.denimgroup.threadfix.remote.response.RestResponse;
 
 /**
  * Created with IntelliJ IDEA. User: bspruth Date: 3/22/14 Time: 12:05 AM To
  * change this template use File | Settings | File Templates.
  */
 public class ThreadFixPublisher extends Recorder {
-	
-	private static final Logger logger = Logger.getLogger(ThreadFixPublisher.class);
 	
 	private final String appId;
 	private final String scanFile;
@@ -143,15 +148,15 @@ public class ThreadFixPublisher extends Recorder {
 		// throw an AbortException to indicate failure
 		return true;
 	}
-	
-	@Override
-	public BuildStepMonitor getRequiredMonitorService() {
-		return BuildStepMonitor.NONE; // NONE since this is not dependent on the last step
-	}
 
 	@Override
 	public DescriptorImpl getDescriptor() {
 		return (DescriptorImpl) super.getDescriptor();
+	}
+
+	@Override
+	public BuildStepMonitor getRequiredMonitorService() {
+		return BuildStepMonitor.NONE; // NONE since this is not dependent on the last step
 	}
 
 	public String getAppId() {
@@ -223,8 +228,13 @@ public class ThreadFixPublisher extends Recorder {
 		}
 
 		public FormValidation doCheckToken(@QueryParameter final String token) throws IOException, ServletException {
+
 			if (!tokenValidator.isValid(token))
 				return FormValidation.error(String.format(tokenErrorTemplate, token));
+
+			// token lengths are 44 alpha-numeric
+			if (tokenErrorTemplate.length() <= 44) 
+				return FormValidation.warning("Isn't the key too short?");
 
 			return FormValidation.ok();
 		}

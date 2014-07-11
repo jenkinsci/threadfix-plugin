@@ -8,6 +8,7 @@ public class SimpleStringValidator implements ConfigurationValueValidator {
 	public boolean isValid(final String value) {
 		if (value == null || value.isEmpty())
 			return false;
+
         return true;
     }
     // TODO: add test of 44 alphanumeric on string for token value
