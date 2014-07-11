@@ -19,8 +19,10 @@ import java.io.PrintStream;
 
 import javax.servlet.ServletException;
 
-import me.automationdomination.plugins.threadfix.service.JenkinsEnvironmentVariableParsingService;
+import me.automationdomination.plugins.threadfix.service.EnvironmentVariableParsingService;
+import me.automationdomination.plugins.threadfix.service.LinuxEnvironmentVariableParsingService;
 import me.automationdomination.plugins.threadfix.service.TfcliService;
+import me.automationdomination.plugins.threadfix.service.WindowsEnvironmentVariableParsingService;
 import me.automationdomination.plugins.threadfix.validation.ApacheCommonsUrlValidator;
 import me.automationdomination.plugins.threadfix.validation.ConfigurationValueValidator;
 import me.automationdomination.plugins.threadfix.validation.FileValidator;
@@ -74,7 +76,21 @@ public class ThreadFixPublisher extends Recorder {
 		final EnvVars envVars = build.getEnvironment(listener);
 		
 		// TODO: why doesn't this work as a member variable?
-		final JenkinsEnvironmentVariableParsingService jenkinsEnvironmentVariableParsingService = new JenkinsEnvironmentVariableParsingService();
+		final EnvironmentVariableParsingService environmentVariableParsingService;
+		
+		final String operatingSystem = System.getProperty("os.name");
+		
+		if (operatingSystem.toLowerCase().startsWith("windows")) {
+			log.println("detected windows os");
+			
+			environmentVariableParsingService = new WindowsEnvironmentVariableParsingService();
+		} else {
+			log.println("detected linux os");
+			
+			environmentVariableParsingService = new LinuxEnvironmentVariableParsingService();
+		}
+		
+		
 		
 		log.println("beginning threadfix publisher execution");		
 		
@@ -82,7 +98,7 @@ public class ThreadFixPublisher extends Recorder {
 		
 		log.println("raw app id: " + appId);
 
-		final String parsedAppId = jenkinsEnvironmentVariableParsingService.parseEnvironentVariables(envVars, appId);
+		final String parsedAppId = environmentVariableParsingService.parseEnvironentVariables(envVars, appId);
 		
 		if (!appIdValidator.isValid(parsedAppId))
 			throw new AbortException(String.format(appIdErrorTemplate, appId));
@@ -93,7 +109,7 @@ public class ThreadFixPublisher extends Recorder {
 		
 		log.println("raw scan file: " + scanFile);
 		
-		final String parsedScanFile = jenkinsEnvironmentVariableParsingService.parseEnvironentVariables(envVars, scanFile);
+		final String parsedScanFile = environmentVariableParsingService.parseEnvironentVariables(envVars, scanFile);
 		
 		if (!scanFileValidator.isValid(parsedScanFile))
 			throw new AbortException(String.format(scanFileErrorTemplate, scanFile));
