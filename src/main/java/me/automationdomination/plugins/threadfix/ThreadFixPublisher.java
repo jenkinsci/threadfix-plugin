@@ -24,6 +24,7 @@ import me.automationdomination.plugins.threadfix.service.LinuxEnvironmentVariabl
 import me.automationdomination.plugins.threadfix.service.TfcliService;
 import me.automationdomination.plugins.threadfix.service.WindowsEnvironmentVariableParsingService;
 import me.automationdomination.plugins.threadfix.validation.ApacheCommonsUrlValidator;
+import me.automationdomination.plugins.threadfix.validation.ApiKeyStringValidator;
 import me.automationdomination.plugins.threadfix.validation.ConfigurationValueValidator;
 import me.automationdomination.plugins.threadfix.validation.FileValidator;
 import me.automationdomination.plugins.threadfix.validation.NumericStringValidator;
@@ -136,8 +137,9 @@ public class ThreadFixPublisher extends Recorder {
 		// TODO: mask this token in the output?
 		// TODO: some kind of error checking whether the command was successful
 		final String token = descriptor.getToken();
-		final ConfigurationValueValidator tokenValidator = descriptor.getTokenValidator();
-		if (!tokenValidator.isValid(token))
+		final ConfigurationValueValidator simpleStringValidator = descriptor.getSimpleStringValidator();
+		final ConfigurationValueValidator apiKeyStringValidator = descriptor.getApiKeyStringValidator();
+		if (!(simpleStringValidator.isValid(token) && apiKeyStringValidator.isValid(token)))
 			throw new AbortException(String.format(descriptor.getTokenErrorTemplate(), token));
 		
 		// the scan file validator should have verified that this file exists already
@@ -207,7 +209,8 @@ public class ThreadFixPublisher extends Recorder {
 		private String token;
 		
 		private final ConfigurationValueValidator threadFixServerUrlValidator = new ApacheCommonsUrlValidator();
-		private final ConfigurationValueValidator tokenValidator = new SimpleStringValidator();
+		private final ConfigurationValueValidator simpleStringValidator = new SimpleStringValidator();
+		private final ConfigurationValueValidator apiKeyStringValidator = new ApiKeyStringValidator();
 		
 		private final String threadFixServerUrlErrorTemplate = "threadfix server url \"%s\" is invalid";
 		private final String tokenErrorTemplate = "threadfix server api key \"%s\" is invalid";
@@ -241,12 +244,8 @@ public class ThreadFixPublisher extends Recorder {
 
 		public FormValidation doCheckToken(@QueryParameter final String token) throws IOException, ServletException {
 
-			if (!tokenValidator.isValid(token))
+			if (!(simpleStringValidator.isValid(token) && apiKeyStringValidator.isValid(token)))
 				return FormValidation.error(String.format(tokenErrorTemplate, token));
-
-			// token lengths are 44 alpha-numeric
-			if (tokenErrorTemplate.length() <= 44) 
-				return FormValidation.warning("Isn't the key too short?");
 
 			return FormValidation.ok();
 		}
@@ -288,7 +287,7 @@ public class ThreadFixPublisher extends Recorder {
 
 			token = formData.getString(TOKEN_PARAMETER);
 
-			if (!tokenValidator.isValid(token))
+			if (!(simpleStringValidator.isValid(token) && apiKeyStringValidator.isValid(token)))
 				throw new FormException(String.format(tokenErrorTemplate, token), TOKEN_PARAMETER);
 			
 			
@@ -338,8 +337,12 @@ public class ThreadFixPublisher extends Recorder {
 			return threadFixServerUrlValidator;
 		}
 
-		public ConfigurationValueValidator getTokenValidator() {
-			return tokenValidator;
+		public ConfigurationValueValidator getSimpleStringValidator() {
+			return simpleStringValidator;
+		}
+
+		public ConfigurationValueValidator getApiKeyStringValidator() {
+			return apiKeyStringValidator;
 		}
 
 		public String getThreadFixServerUrlErrorTemplate() {
