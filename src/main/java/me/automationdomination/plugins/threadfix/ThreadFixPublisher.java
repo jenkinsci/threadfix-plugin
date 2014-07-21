@@ -1,42 +1,50 @@
 package me.automationdomination.plugins.threadfix;
 
-import com.denimgroup.threadfix.data.entities.Application;
-import com.denimgroup.threadfix.data.entities.Organization;
-import com.denimgroup.threadfix.data.entities.Scan;
-import com.denimgroup.threadfix.remote.response.RestResponse;
 import hudson.AbortException;
 import hudson.EnvVars;
 import hudson.Extension;
 import hudson.Launcher;
+import hudson.model.BuildListener;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
-import hudson.model.BuildListener;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
-import me.automationdomination.plugins.threadfix.service.JenkinsEnvironmentVariableParsingService;
-import me.automationdomination.plugins.threadfix.service.TfcliService;
-import me.automationdomination.plugins.threadfix.validation.*;
+
+import java.io.IOException;
+import java.io.PrintStream;
+
+import javax.servlet.ServletException;
+
+import me.automationdomination.plugins.threadfix.service.EnvironmentVariableParsingService;
+import me.automationdomination.plugins.threadfix.service.LinuxEnvironmentVariableParsingService;
+import me.automationdomination.plugins.threadfix.service.ThreadFixService;
+import me.automationdomination.plugins.threadfix.service.WindowsEnvironmentVariableParsingService;
+import me.automationdomination.plugins.threadfix.validation.ApacheCommonsUrlValidator;
+import me.automationdomination.plugins.threadfix.validation.ApiKeyStringValidator;
+import me.automationdomination.plugins.threadfix.validation.ConfigurationValueValidator;
+import me.automationdomination.plugins.threadfix.validation.FileValidator;
+import me.automationdomination.plugins.threadfix.validation.NumericStringValidator;
+import me.automationdomination.plugins.threadfix.validation.SimpleStringValidator;
 import net.sf.json.JSONObject;
-import org.apache.log4j.Logger;
+
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
-import javax.servlet.ServletException;
-import java.io.IOException;
-import java.io.PrintStream;
+import com.denimgroup.threadfix.data.entities.Application;
+import com.denimgroup.threadfix.data.entities.Organization;
+import com.denimgroup.threadfix.data.entities.Scan;
+import com.denimgroup.threadfix.remote.response.RestResponse;
 
 /**
  * Created with IntelliJ IDEA. User: bspruth Date: 3/22/14 Time: 12:05 AM To
  * change this template use File | Settings | File Templates.
  */
 public class ThreadFixPublisher extends Recorder {
-	
-	private static final Logger logger = Logger.getLogger(ThreadFixPublisher.class);
 	
 	private final String appId;
 	private final String scanFile;
@@ -69,7 +77,21 @@ public class ThreadFixPublisher extends Recorder {
 		final EnvVars envVars = build.getEnvironment(listener);
 		
 		// TODO: why doesn't this work as a member variable?
-		final JenkinsEnvironmentVariableParsingService jenkinsEnvironmentVariableParsingService = new JenkinsEnvironmentVariableParsingService();
+		final EnvironmentVariableParsingService environmentVariableParsingService;
+		
+		final String operatingSystem = System.getProperty("os.name");
+		
+		if (operatingSystem.toLowerCase().startsWith("windows")) {
+			log.println("detected windows os");
+			
+			environmentVariableParsingService = new WindowsEnvironmentVariableParsingService();
+		} else {
+			log.println("detected linux os");
+			
+			environmentVariableParsingService = new LinuxEnvironmentVariableParsingService();
+		}
+		
+		
 		
 		log.println("beginning threadfix publisher execution");		
 		
@@ -77,7 +99,7 @@ public class ThreadFixPublisher extends Recorder {
 		
 		log.println("raw app id: " + appId);
 
-		final String parsedAppId = jenkinsEnvironmentVariableParsingService.parseEnvironentVariables(envVars, appId);
+		final String parsedAppId = environmentVariableParsingService.parseEnvironentVariables(envVars, appId);
 		
 		if (!appIdValidator.isValid(parsedAppId))
 			throw new AbortException(String.format(appIdErrorTemplate, appId));
@@ -88,7 +110,7 @@ public class ThreadFixPublisher extends Recorder {
 		
 		log.println("raw scan file: " + scanFile);
 		
-		final String parsedScanFile = jenkinsEnvironmentVariableParsingService.parseEnvironentVariables(envVars, scanFile);
+		final String parsedScanFile = environmentVariableParsingService.parseEnvironentVariables(envVars, scanFile);
 		
 		if (!scanFileValidator.isValid(parsedScanFile))
 			throw new AbortException(String.format(scanFileErrorTemplate, scanFile));
@@ -115,18 +137,15 @@ public class ThreadFixPublisher extends Recorder {
 		// TODO: mask this token in the output?
 		// TODO: some kind of error checking whether the command was successful
 		final String token = descriptor.getToken();
-		final ConfigurationValueValidator tokenValidator = descriptor.getTokenValidator();
-		if (!tokenValidator.isValid(token))
+		final ConfigurationValueValidator simpleStringValidator = descriptor.getSimpleStringValidator();
+		final ConfigurationValueValidator apiKeyStringValidator = descriptor.getApiKeyStringValidator();
+		if (!(simpleStringValidator.isValid(token) && apiKeyStringValidator.isValid(token)))
 			throw new AbortException(String.format(descriptor.getTokenErrorTemplate(), token));
-		
-		log.println("using token: " + token);
-		
-		
 		
 		// the scan file validator should have verified that this file exists already
 		log.println("uploading scan file");
 		// TODO: does this need to be a member variable?  part of the descriptor?  etc...
-		final TfcliService tfcliService = new TfcliService(threadFixServerUrl, token);
+		final ThreadFixService tfcliService = new ThreadFixService(threadFixServerUrl, token);
 		final RestResponse<Scan> uploadFileResponse = tfcliService.uploadFile(parsedAppId, parsedScanFile);
 		
 		if (uploadFileResponse.success) {
@@ -143,15 +162,15 @@ public class ThreadFixPublisher extends Recorder {
 		// throw an AbortException to indicate failure
 		return true;
 	}
-	
-	@Override
-	public BuildStepMonitor getRequiredMonitorService() {
-		return BuildStepMonitor.NONE; // NONE since this is not dependent on the last step
-	}
 
 	@Override
 	public DescriptorImpl getDescriptor() {
 		return (DescriptorImpl) super.getDescriptor();
+	}
+
+	@Override
+	public BuildStepMonitor getRequiredMonitorService() {
+		return BuildStepMonitor.NONE; // NONE since this is not dependent on the last step
 	}
 
 	public String getAppId() {
@@ -190,7 +209,8 @@ public class ThreadFixPublisher extends Recorder {
 		private String token;
 		
 		private final ConfigurationValueValidator threadFixServerUrlValidator = new ApacheCommonsUrlValidator();
-		private final ConfigurationValueValidator tokenValidator = new SimpleStringValidator();
+		private final ConfigurationValueValidator simpleStringValidator = new SimpleStringValidator();
+		private final ConfigurationValueValidator apiKeyStringValidator = new ApiKeyStringValidator();
 		
 		private final String threadFixServerUrlErrorTemplate = "threadfix server url \"%s\" is invalid";
 		private final String tokenErrorTemplate = "threadfix server api key \"%s\" is invalid";
@@ -223,30 +243,24 @@ public class ThreadFixPublisher extends Recorder {
 		}
 
 		public FormValidation doCheckToken(@QueryParameter final String token) throws IOException, ServletException {
-			if (!tokenValidator.isValid(token))
+
+			if (!(simpleStringValidator.isValid(token) && apiKeyStringValidator.isValid(token)))
 				return FormValidation.error(String.format(tokenErrorTemplate, token));
 
 			return FormValidation.ok();
 		}
 
-		public FormValidation doTestConnection(
-				@QueryParameter final String url,
-				@QueryParameter final String token) throws IOException,
-				ServletException {
-
-
-			try {
-				// TODO add test - tfcli
-                final TfcliService tfcliService = new TfcliService(url, token);
-
-                RestResponse<Organization[]> getAllTeamsResponse = tfcliService.getAllTeams();
-
-                return FormValidation.ok("ThreadFix connection success!");
-			} catch (Exception e) {
-				return FormValidation.error("ThreadFix connection error : " + e.getMessage());
+		public FormValidation doTestConnection(@QueryParameter final String url, @QueryParameter final String token) throws IOException, ServletException {
+			final ThreadFixService tfcliService = new ThreadFixService(url, token);
+			
+			final RestResponse<Organization[]> getAllTeamsResponse = tfcliService.getAllTeams();
+			
+			if (getAllTeamsResponse.success) {
+				return FormValidation.ok("ThreadFix connection success!");
+			} else {
+				return FormValidation.error("Unable to connect to ThreadFix server");
 			}
 		}
-
 
 		@Override
 		public boolean isApplicable(@SuppressWarnings("rawtypes") final Class<? extends AbstractProject> jobType) {
@@ -265,12 +279,10 @@ public class ThreadFixPublisher extends Recorder {
 
 			token = formData.getString(TOKEN_PARAMETER);
 
-			if (!tokenValidator.isValid(token))
+			if (!(simpleStringValidator.isValid(token) && apiKeyStringValidator.isValid(token)))
 				throw new FormException(String.format(tokenErrorTemplate, token), TOKEN_PARAMETER);
 			
-			
 			save();
-
 			
 			return super.configure(staplerRequest, formData);
 		}
@@ -278,9 +290,9 @@ public class ThreadFixPublisher extends Recorder {
 		public ListBoxModel doFillAppIdItems() {
 			final ListBoxModel appIds = new ListBoxModel();
 			
-			final TfcliService tfcliService = new TfcliService(url, token);
+			final ThreadFixService threadFixSErvice = new ThreadFixService(url, token);
 			
-			RestResponse<Organization[]> getAllTeamsResponse = tfcliService.getAllTeams();
+			final RestResponse<Organization[]> getAllTeamsResponse = threadFixSErvice.getAllTeams();
 			
 			if (getAllTeamsResponse.success) {
 				for (final Organization organization : getAllTeamsResponse.object) {
@@ -315,8 +327,12 @@ public class ThreadFixPublisher extends Recorder {
 			return threadFixServerUrlValidator;
 		}
 
-		public ConfigurationValueValidator getTokenValidator() {
-			return tokenValidator;
+		public ConfigurationValueValidator getSimpleStringValidator() {
+			return simpleStringValidator;
+		}
+
+		public ConfigurationValueValidator getApiKeyStringValidator() {
+			return apiKeyStringValidator;
 		}
 
 		public String getThreadFixServerUrlErrorTemplate() {
