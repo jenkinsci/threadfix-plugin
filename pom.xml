@@ -25,9 +25,9 @@
 	</licenses>
 
 	<scm>
-		<connection>scm:git:ssh://github.com/automationdomination/threadfix-plugin.git</connection>
-		<developerConnection>scm:git:ssh://git@github.com/automationdomination/threadfix-plugin.git</developerConnection>
-		<url>https://github.com/automationdomination/threadfix-plugin</url>
+		<connection>scm:git:ssh://github.com/jenkinsci/threadfix-plugin.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com/jenkinsci/threadfix-plugin.git</developerConnection>
+		<url>https://github.com/jenkinsci/threadfix-plugin</url>
 	</scm>
 
 	<repositories>
@@ -97,13 +97,6 @@
 				<configuration>
 					<goals>deploy</goals>
 				</configuration>
-				<dependencies>
-					<dependency>
-						<groupId>org.apache.maven.scm</groupId>
-						<artifactId>maven-scm-provider-gitexe</artifactId>
-						<version>1.9</version>
-					</dependency>
-				</dependencies>
 			</plugin>
 		</plugins>
 	</build>
