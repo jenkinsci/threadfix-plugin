@@ -21,10 +21,12 @@ public class WindowsEnvironmentVariableParsingService implements EnvironmentVari
 			// TODO: can this be done more efficiently?
 			final String environmentVariableKey = matchedValue.replaceAll("%", "");
 			
-			final String environmentVariableValue = envVars.get(environmentVariableKey);
+			String environmentVariableValue = envVars.get(environmentVariableKey);
 			
 			// if this is null, that means the environment variable was not found
 			if (environmentVariableValue != null) {
+				environmentVariableValue.replaceAll("\\\\", "\\\\\\\\");
+				
 				// TODO: can this be done more efficiently?
 				parsedValue = parsedValue.replaceAll("%" + environmentVariableKey + "%", environmentVariableValue);
 			}
