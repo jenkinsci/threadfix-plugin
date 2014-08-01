@@ -35,6 +35,10 @@
 			<id>repo.jenkins-ci.org</id>
 			<url>http://repo.jenkins-ci.org/public/</url>
 		</repository>
+		<repository>
+			<id>project.local</id>
+			<url>file:${project.basedir}/repo</url>
+		</repository>
 	</repositories>
 
 
@@ -65,6 +69,7 @@
 		<easymock.version>3.2</easymock.version>
 		<slf4j.version>1.7.7</slf4j.version>
 		<commons.validator.version>1.4.0</commons.validator.version>
+		<threadfix-cli.version>2.0FINAL-SNAPSHOT</threadfix-cli.version>
 	</properties>
 
 	<build>
@@ -121,9 +126,7 @@
 		<dependency>
 			<groupId>com.denimgroup.threadfix</groupId>
 			<artifactId>threadfix-cli</artifactId>
-			<version>2.0FINAL-SNAPSHOT</version>
-			<scope>system</scope>
-    		<systemPath>${basedir}/lib/threadfix-cli-2.0FINAL-SNAPSHOT-jar-with-dependencies.jar</systemPath>
+			<version>${threadfix-cli.version}</version>
 		</dependency>
 	</dependencies>
 
