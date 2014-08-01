@@ -98,13 +98,11 @@ public class ThreadFixPublisher extends Recorder {
 		
 		
 		log.println("raw app id: " + appId);
-
-		final String parsedAppId = environmentVariableParsingService.parseEnvironentVariables(envVars, appId);
 		
-		if (!appIdValidator.isValid(parsedAppId))
+		if (!appIdValidator.isValid(appId))
 			throw new AbortException(String.format(appIdErrorTemplate, appId));
 		
-		log.println("using app id: " + parsedAppId);
+		log.println("using app id: " + appId);
 		
 		
 		
@@ -146,7 +144,7 @@ public class ThreadFixPublisher extends Recorder {
 		log.println("uploading scan file");
 		// TODO: does this need to be a member variable?  part of the descriptor?  etc...
 		final ThreadFixService tfcliService = new ThreadFixService(threadFixServerUrl, token);
-		final RestResponse<Scan> uploadFileResponse = tfcliService.uploadFile(parsedAppId, parsedScanFile);
+		final RestResponse<Scan> uploadFileResponse = tfcliService.uploadFile(appId, parsedScanFile);
 		
 		if (uploadFileResponse.success) {
 			log.println("scan file uploaded successfully!");

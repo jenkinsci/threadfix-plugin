@@ -42,5 +42,26 @@ public class WindowsVariableParsingServiceTest {
 		
 		Assert.assertEquals(test, result);
 	}
+	
+	@Test
+	public void multipleVariableTest() {
+		String workspaceVariableName = "WORKSPACE";
+		String workspaceVariableValue = "VALUE1";
+		
+		String buildTagVariableName = "BUILD_TAG";
+		String buildTagVariableValue = "VALUE2";
+		
+		EnvVars envVars = EasyMock.createNiceMock(EnvVars.class);
+		EasyMock.expect(envVars.get(workspaceVariableName)).andReturn(workspaceVariableValue);
+		EasyMock.expect(envVars.get(buildTagVariableName)).andReturn(buildTagVariableValue);
+		EasyMock.replay(envVars);
+		
+		String test = "%WORKSPACE%\\%BUILD_TAG%.fpr";
+		
+		WindowsEnvironmentVariableParsingService w = new WindowsEnvironmentVariableParsingService();
+		String result = w.parseEnvironentVariables(envVars, test);
+		
+		Assert.assertEquals("VALUE1\\VALUE2.fpr", result);
+	}
 
 }
