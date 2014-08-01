@@ -17,6 +17,7 @@ threadfix-cli.log
 ###############
 target
 work
+pom.xml
 
 # Compiled source #
 ###################
