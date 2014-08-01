@@ -2,7 +2,6 @@
 #############
 threadfix.properties
 threadfix-cli.log
-!repo//com/denimgroup/threadfix/threadfix-cli/2.0FINAL-SNAPSHOT/threadfix-cli-2.0FINAL-20140801.055939-1.jar
 
 # IntelliJ files #
 ##################
