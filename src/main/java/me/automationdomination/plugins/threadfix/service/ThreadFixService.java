@@ -1,5 +1,7 @@
 package me.automationdomination.plugins.threadfix.service;
 
+
+
 import com.denimgroup.threadfix.data.entities.Organization;
 import com.denimgroup.threadfix.data.entities.Scan;
 import com.denimgroup.threadfix.remote.ThreadFixRestClient;

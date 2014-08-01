@@ -1,20 +1,21 @@
-<?xml version="1.0"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation=" http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation=" http://maven.apache.org/POM/4.0.0    http://maven.apache.org/maven-v4_0_0.xsd">
+
 	<modelVersion>4.0.0</modelVersion>
-	<description>Uploads any supported ThreadFix scan file to your ThreadFix server</description>
-	<url>http://wiki.jenkins-ci.org/display/JENKINS/Threadfix+Plugin</url>
+
 	<parent>
 		<!-- which version of Jenkins is this plugin built against? -->
 		<groupId>org.jenkins-ci.plugins</groupId>
 		<artifactId>plugin</artifactId>
 		<version>1.509.4</version>
 	</parent>
+
+	<groupId>me.automationdomination</groupId>
 	<artifactId>threadfix</artifactId>
 	<name>ThreadFix Plugin</name>
 	<version>1.4.3-SNAPSHOT</version>
 	<inceptionYear>2014</inceptionYear>
 	<packaging>hpi</packaging>
+
 	<licenses>
 		<license>
 			<name>The MIT license</name>
@@ -22,21 +23,21 @@
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
+
 	<scm>
 		<connection>scm:git:ssh://github.com/automationdomination/threadfix-plugin.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/automationdomination/threadfix-plugin.git</developerConnection>
 		<url>https://github.com/automationdomination/threadfix-plugin</url>
 	</scm>
+
 	<repositories>
 		<repository>
 			<id>repo.jenkins-ci.org</id>
 			<url>http://repo.jenkins-ci.org/public/</url>
 		</repository>
-		<repository>
-			<id>threadfix.project</id>
-			<url>file:${basedir}/repo</url>
-		</repository>
 	</repositories>
+
+
 	<!-- get every artifact through repo.jenkins-ci.org, which proxies all the 
 		artifacts that we need -->
 	<pluginRepositories>
@@ -45,6 +46,7 @@
 			<url>http://repo.jenkins-ci.org/public/</url>
 		</pluginRepository>
 	</pluginRepositories>
+
 	<developers>
 		<developer>
 			<id>automationdomination</id>
@@ -56,21 +58,15 @@
 			<email>christopher.baek@gmail.com</email>
 		</developer>
 	</developers>
-	<issueManagement>
-		<system>JIRA</system>
-		<url>http://issues.jenkins-ci.org/</url>
-	</issueManagement>
+
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<jersey.client.version>1.16</jersey.client.version>
-		<joda.time.version>2.1</joda.time.version>
-		<commons.validator.version>1.4.0</commons.validator.version>
-		<org.slf4j.version>1.7.7</org.slf4j.version>
-		<threadfix.cli.version>2.0FINAL-SNAPSHOT</threadfix.cli.version>
-		<animal.sniffer.annotations>1.9</animal.sniffer.annotations>
 		<junit.version>4.11</junit.version>
 		<easymock.version>3.2</easymock.version>
+		<slf4j.version>1.7.7</slf4j.version>
+		<commons.validator.version>1.4.0</commons.validator.version>
 	</properties>
+
 	<build>
 		<plugins>
 			<plugin>
@@ -84,6 +80,9 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-release-plugin</artifactId>
+				<configuration>
+					<goals>deploy</goals>
+				</configuration>
 				<dependencies>
 					<dependency>
 						<groupId>org.apache.maven.scm</groupId>
@@ -94,6 +93,7 @@
 			</plugin>
 		</plugins>
 	</build>
+
 	<dependencies>
 		<dependency>
 			<groupId>junit</groupId>
@@ -108,24 +108,10 @@
 			<scope>test</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.sun.jersey</groupId>
-			<artifactId>jersey-client</artifactId>
-			<version>${jersey.client.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.jersey</groupId>
-			<artifactId>jersey-json</artifactId>
-			<version>${jersey.client.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.sun.jersey.contribs</groupId>
-			<artifactId>jersey-apache-client</artifactId>
-			<version>${jersey.client.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>joda-time</groupId>
-			<artifactId>joda-time</artifactId>
-			<version>${joda.time.version}</version>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${slf4j.version}</version>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>commons-validator</groupId>
@@ -133,19 +119,12 @@
 			<version>${commons.validator.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>${org.slf4j.version}</version>
-		</dependency>
-		<dependency>
 			<groupId>com.denimgroup.threadfix</groupId>
 			<artifactId>threadfix-cli</artifactId>
-			<version>${threadfix.cli.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.codehaus.mojo</groupId>
-			<artifactId>animal-sniffer-annotations</artifactId>
-			<version>${animal.sniffer.annotations}</version>
+			<version>2.0FINAL-SNAPSHOT</version>
+			<scope>system</scope>
+    		<systemPath>${basedir}/lib/threadfix-cli-2.0FINAL-SNAPSHOT-jar-with-dependencies.jar</systemPath>
 		</dependency>
 	</dependencies>
+
 </project>
