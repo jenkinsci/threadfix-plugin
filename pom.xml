@@ -10,11 +10,14 @@
 	</parent>
 
 	<artifactId>threadfix</artifactId>
-	<name>ThreadFix Plugin</name>
 	<version>1.4.4-SNAPSHOT</version>
 	<inceptionYear>2014</inceptionYear>
 	<packaging>hpi</packaging>
 
+	<name>ThreadFix Plugin</name>
+	<description>Uploads any supported ThreadFix scan file to your ThreadFix server</description>
+	<url>http://wiki.jenkins-ci.org/display/JENKINS/Threadfix+Plugin</url>
+	
 	<licenses>
 		<license>
 			<name>The MIT license</name>
@@ -24,11 +27,11 @@
 	</licenses>
 
 	<scm>
-		<connection>scm:git:ssh://github.com/automationdomination/threadfix-plugin.git</connection>
-		<developerConnection>scm:git:ssh://git@github.com/automationdomination/threadfix-plugin.git</developerConnection>
-		<url>https://github.com/automationdomination/threadfix-plugin</url>
-	  <tag>HEAD</tag>
-  </scm>
+		<connection>scm:git:git://github.com/jenkinsci/${project.artifactId}-plugin.git</connection>
+		<developerConnection>scm:git:git@github.com:jenkinsci/${project.artifactId}-plugin.git</developerConnection>
+		<url>http://github.com/jenkinsci/${project.artifactId}-plugin</url>
+		<tag>HEAD</tag>
+	</scm>
 
 	<repositories>
 		<repository>
