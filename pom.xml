@@ -12,7 +12,7 @@
 	<groupId>me.automationdomination</groupId>
 	<artifactId>threadfix</artifactId>
 	<name>ThreadFix Plugin</name>
-	<version>1.4.3-SNAPSHOT</version>
+	<version>1.4.3</version>
 	<inceptionYear>2014</inceptionYear>
 	<packaging>hpi</packaging>
 
@@ -28,7 +28,8 @@
 		<connection>scm:git:ssh://github.com/automationdomination/threadfix-plugin.git</connection>
 		<developerConnection>scm:git:ssh://git@github.com/automationdomination/threadfix-plugin.git</developerConnection>
 		<url>https://github.com/automationdomination/threadfix-plugin</url>
-	</scm>
+	  <tag>threadfix-1.4.3</tag>
+  </scm>
 
 	<repositories>
 		<repository>
