@@ -38,7 +38,14 @@
 		<repository>
 			<id>project.local</id>
 			<url>file:${project.basedir}/repo</url>
-			<updatePolicy>always</updatePolicy>
+			<releases>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</releases>
+			<snapshots>
+				<enabled>true</enabled>
+				<updatePolicy>always</updatePolicy>
+			</snapshots>
 		</repository>
 	</repositories>
 
