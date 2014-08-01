@@ -2,6 +2,7 @@
 #############
 threadfix.properties
 threadfix-cli.log
+!lib/threadfix-cli-2.0FINAL-SNAPSHOT-jar-with-dependencies.jar
 
 # IntelliJ files #
 ##################
