@@ -78,7 +78,7 @@
 		<easymock.version>3.2</easymock.version>
 		<slf4j.version>1.7.7</slf4j.version>
 		<commons.validator.version>1.4.0</commons.validator.version>
-		<threadfix-cli.version>2.0FINAL-SNAPSHOT</threadfix-cli.version>
+		<threadfix-cli.version>2.0</threadfix-cli.version>
 	</properties>
 
 	<build>
