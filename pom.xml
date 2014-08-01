@@ -9,10 +9,9 @@
 		<version>1.509.4</version>
 	</parent>
 
-	<groupId>me.automationdomination</groupId>
 	<artifactId>threadfix</artifactId>
 	<name>ThreadFix Plugin</name>
-	<version>1.4.4-SNAPSHOT</version>
+	<version>1.4.3-SNAPSHOT</version>
 	<inceptionYear>2014</inceptionYear>
 	<packaging>hpi</packaging>
 
