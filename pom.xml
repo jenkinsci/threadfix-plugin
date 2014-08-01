@@ -1,4 +1,4 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation=" http://maven.apache.org/POM/4.0.0    http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation=" http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
 	<modelVersion>4.0.0</modelVersion>
 
@@ -12,7 +12,7 @@
 	<groupId>me.automationdomination</groupId>
 	<artifactId>threadfix</artifactId>
 	<name>ThreadFix Plugin</name>
-	<version>1.4.3-SNAPSHOT</version>
+	<version>1.4.4-SNAPSHOT</version>
 	<inceptionYear>2014</inceptionYear>
 	<packaging>hpi</packaging>
 
@@ -25,10 +25,11 @@
 	</licenses>
 
 	<scm>
-		<connection>scm:git:ssh://github.com/jenkinsci/threadfix-plugin.git</connection>
-		<developerConnection>scm:git:ssh://git@github.com/jenkinsci/threadfix-plugin.git</developerConnection>
-		<url>https://github.com/jenkinsci/threadfix-plugin</url>
-	</scm>
+		<connection>scm:git:ssh://github.com/automationdomination/threadfix-plugin.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com/automationdomination/threadfix-plugin.git</developerConnection>
+		<url>https://github.com/automationdomination/threadfix-plugin</url>
+	  <tag>HEAD</tag>
+  </scm>
 
 	<repositories>
 		<repository>
@@ -86,6 +87,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.1</version><!--$NO-MVN-MAN-VER$-->
 				<configuration>
 					<source>1.7</source>
 					<target>1.7</target>
@@ -94,9 +96,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-release-plugin</artifactId>
-				<configuration>
-					<goals>deploy</goals>
-				</configuration>
+				<version>2.5</version><!--$NO-MVN-MAN-VER$-->
 			</plugin>
 		</plugins>
 	</build>
