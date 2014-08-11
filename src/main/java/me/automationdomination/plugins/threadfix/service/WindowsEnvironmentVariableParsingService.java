@@ -10,7 +10,7 @@ public class WindowsEnvironmentVariableParsingService implements EnvironmentVari
 	private final Pattern environmentVariablePattern = Pattern.compile("%.+?%");
 
 	@Override
-	public String parseEnvironentVariables(final EnvVars envVars, final String value) {
+	public String parseEnvironentVariables(final EnvVars envVars, final String value, PrintStream log) {
 		final Matcher matcher = environmentVariablePattern.matcher(value);
 		
 		String parsedValue = value;
