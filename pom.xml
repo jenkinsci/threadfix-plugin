@@ -78,6 +78,7 @@
 		<easymock.version>3.2</easymock.version>
 		<slf4j.version>1.7.7</slf4j.version>
 		<commons.validator.version>1.4.0</commons.validator.version>
+        <animal.sniffer.annotations>1.9</animal.sniffer.annotations>
 		<threadfix-cli.version>2.0</threadfix-cli.version>
 	</properties>
 
@@ -140,6 +141,11 @@
 			<artifactId>commons-validator</artifactId>
 			<version>${commons.validator.version}</version>
 		</dependency>
+        <dependency>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>animal-sniffer-annotations</artifactId>
+            <version>${animal.sniffer.annotations}</version>
+        </dependency>
 		<dependency>
 			<groupId>com.denimgroup.threadfix</groupId>
 			<artifactId>threadfix-cli</artifactId>
