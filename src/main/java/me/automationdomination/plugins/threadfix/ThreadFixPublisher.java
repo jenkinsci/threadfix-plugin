@@ -71,7 +71,7 @@ public class ThreadFixPublisher extends Recorder {
 		final EnvironmentVariableParsingService environmentVariableParsingService;
 		
 		final String operatingSystem = System.getProperty("os.name");
-		
+
 		if (operatingSystem.toLowerCase().startsWith("windows")) {
 			log.println("detected windows os");
 			
