@@ -31,9 +31,9 @@ public class WindowsEnvironmentVariableParsingService implements EnvironmentVari
 
 			// if this is null, that means the environment variable was not found
 			if (environmentVariableValue != null) {
+				environmentVariableValue = environmentVariableValue.replaceAll("\\\\", "\\\\\\\\");
 
-				environmentVariableValue.replaceAll("\\\\", "\\\\\\\\");
-
+				log.println("this better work again with the slashes!!!");
 				// TODO: can this be done more efficiently?
 				parsedValue = parsedValue.replaceAll("%" + environmentVariableKey + "%", environmentVariableValue);
 				//
