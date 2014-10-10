@@ -5,12 +5,15 @@ import hudson.EnvVars;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * This class environment variables on Windows platforms
+ */
 public class WindowsEnvironmentVariableParsingService implements EnvironmentVariableParsingService {
 
 	private final Pattern environmentVariablePattern = Pattern.compile("%.+?%");
 
 	@Override
-	public String parseEnvironentVariables(final EnvVars envVars, final String value) {
+	public String parse(final EnvVars envVars, String value) {
 		final Matcher matcher = this.environmentVariablePattern.matcher(value);
 
 		String parsedValue = value;

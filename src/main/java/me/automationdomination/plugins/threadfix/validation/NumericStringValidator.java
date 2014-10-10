@@ -1,8 +1,12 @@
 package me.automationdomination.plugins.threadfix.validation;
 
-public class NumericStringValidator implements ConfigurationValueValidator {
+import java.io.Serializable;
 
-	@Override
+public class NumericStringValidator implements ConfigurationValueValidator, Serializable {
+
+    private static final long serialVersionUID = 4555269426299715085L;
+
+    @Override
 	public boolean isValid(final String value) {
 		if (value == null || value.isEmpty())
 			return false;

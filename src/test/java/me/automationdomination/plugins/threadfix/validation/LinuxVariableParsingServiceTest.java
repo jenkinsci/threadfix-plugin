@@ -1,7 +1,7 @@
 package me.automationdomination.plugins.threadfix.validation;
 
 import hudson.EnvVars;
-import me.automationdomination.plugins.threadfix.service.LinuxEnvironmentVariableParsingService;
+import me.automationdomination.plugins.threadfix.service.UnixEnvironmentVariableParsingService;
 
 import org.easymock.EasyMock;
 import org.junit.Assert;
@@ -20,8 +20,8 @@ public class LinuxVariableParsingServiceTest {
 		
 		String test = "${VARIABLE}";
 		
-		LinuxEnvironmentVariableParsingService l = new LinuxEnvironmentVariableParsingService();
-		String result = l.parseEnvironentVariables(envVars, test);
+		UnixEnvironmentVariableParsingService l = new UnixEnvironmentVariableParsingService();
+		String result = l.parse(envVars, test);
 		
 		Assert.assertEquals(value, result);
 	}
@@ -37,8 +37,8 @@ public class LinuxVariableParsingServiceTest {
 		
 		String test = "${VARIABLE}";
 		
-		LinuxEnvironmentVariableParsingService l = new LinuxEnvironmentVariableParsingService();
-		String result = l.parseEnvironentVariables(envVars, test);
+		UnixEnvironmentVariableParsingService l = new UnixEnvironmentVariableParsingService();
+		String result = l.parse(envVars, test);
 		
 		Assert.assertEquals(test, result);
 	}

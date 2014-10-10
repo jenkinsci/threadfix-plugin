@@ -4,6 +4,6 @@ import hudson.EnvVars;
 
 public interface EnvironmentVariableParsingService {
 	
-	public String parseEnvironentVariables(EnvVars paramEnvVars, String paramString);
+	public String parse(EnvVars paramEnvVars, String paramString);
 	
 }

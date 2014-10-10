@@ -5,16 +5,15 @@ import hudson.EnvVars;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class LinuxEnvironmentVariableParsingService implements EnvironmentVariableParsingService {
+/**
+ * This class environment variables on non-Windows platforms
+ */
+public class UnixEnvironmentVariableParsingService implements EnvironmentVariableParsingService {
 
-    /* TODO: neeed to add compatability for windows
-    * extending on EnvVars rather than a replace all
-    * https://github.com/jenkinsci/email-ext-plugin/blob/master/src/main/java/hudson/plugins/emailext/EmailRecipientUtils.java
-    */	
-	private final Pattern environmentVariablePattern = Pattern.compile("\\$\\{.+?\\}");
+	private static final Pattern environmentVariablePattern = Pattern.compile("\\$\\{.+?\\}");
 
-	@Override
-	public String parseEnvironentVariables(final EnvVars envVars, final String value) {
+    @Override
+	public String parse(final EnvVars envVars, String value) {
 		final Matcher matcher = environmentVariablePattern.matcher(value);
 		
 		String parsedValue = value;
@@ -33,7 +32,6 @@ public class LinuxEnvironmentVariableParsingService implements EnvironmentVariab
 				parsedValue = parsedValue.replaceAll("\\$\\{" + environmentVariableKey + "\\}", environmentVariableValue);
 			}
 		}
-		
 		return parsedValue;
 	}
 

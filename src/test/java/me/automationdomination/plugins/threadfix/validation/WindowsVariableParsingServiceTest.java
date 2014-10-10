@@ -21,7 +21,7 @@ public class WindowsVariableParsingServiceTest {
 		String test = "%VARIABLE%";
 		
 		WindowsEnvironmentVariableParsingService w = new WindowsEnvironmentVariableParsingService();
-		String result = w.parseEnvironentVariables(envVars, test);
+		String result = w.parse(envVars, test);
 		
 		Assert.assertEquals(value, result);
 	}
@@ -38,7 +38,7 @@ public class WindowsVariableParsingServiceTest {
 		String test = "%VARIABLE%";
 		
 		WindowsEnvironmentVariableParsingService w = new WindowsEnvironmentVariableParsingService();
-		String result = w.parseEnvironentVariables(envVars, test);
+		String result = w.parse(envVars, test);
 		
 		Assert.assertEquals(test, result);
 	}
@@ -59,7 +59,7 @@ public class WindowsVariableParsingServiceTest {
 		String test = "%WORKSPACE%\\%BUILD_TAG%.fpr";
 		
 		WindowsEnvironmentVariableParsingService w = new WindowsEnvironmentVariableParsingService();
-		String result = w.parseEnvironentVariables(envVars, test);
+		String result = w.parse(envVars, test);
 		
 		Assert.assertEquals("VALUE1\\VALUE2.fpr", result);
 	}
@@ -80,7 +80,7 @@ public class WindowsVariableParsingServiceTest {
 		String test = "%WORKSPACE%\\%BUILD_TAG%.fpr";
 		
 		WindowsEnvironmentVariableParsingService w = new WindowsEnvironmentVariableParsingService();
-		String result = w.parseEnvironentVariables(envVars, test);
+		String result = w.parse(envVars, test);
 		
 		Assert.assertEquals("C:\\Users\\user\\workspace\\VALUE2.fpr", result);
 	}
