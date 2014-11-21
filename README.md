@@ -11,10 +11,10 @@
 A [ThreadFix server](http://www.threadfix.org/download/) deployment with an *API Key* created from your ThreadFix installation.
 
 ### Jenkins Global Config ###
-![Global Configuration for ThreadFix Jenkins Plugin](https://raw.githubusercontent.com/automationdomination/threadfix-plugin/master/images/ThreadFixJenkinsGlobalConfig.png)
+![Global Configuration for ThreadFix Jenkins Plugin](https://raw.githubusercontent.com/jenkinsci/threadfix-plugin/master/images/ThreadFixJenkinsGlobalConfig.png)
 
 ### Jenkins Project Config ###
-![Project Configuration for ThreadFix Jenkins Plugin](https://raw.githubusercontent.com/automationdomination/threadfix-plugin/master/images/ThreadFixJenkinsProjectConfig.png)
+![Project Configuration for ThreadFix Jenkins Plugin](https://raw.githubusercontent.com/jenkinsci/threadfix-plugin/master/images/ThreadFixJenkinsProjectConfig.png)
 
 ### License ###
 MIT License (MIT)
