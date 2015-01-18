@@ -6,11 +6,11 @@
 		<!-- which version of Jenkins is this plugin built against? -->
 		<groupId>org.jenkins-ci.plugins</groupId>
 		<artifactId>plugin</artifactId>
-		<version>1.509.4</version>
+		<version>1.600.1</version>
 	</parent>
 
 	<artifactId>threadfix</artifactId>
-	<version>1.4.5-SNAPSHOT</version>
+	<version>1.4.6-SNAPSHOT</version>
 	<inceptionYear>2014</inceptionYear>
 	<packaging>hpi</packaging>
 
