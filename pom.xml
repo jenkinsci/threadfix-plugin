@@ -6,11 +6,11 @@
 		<!-- which version of Jenkins is this plugin built against? -->
 		<groupId>org.jenkins-ci.plugins</groupId>
 		<artifactId>plugin</artifactId>
-		<version>1.509.4</version>
+		<version>1.560</version>
 	</parent>
 
 	<artifactId>threadfix</artifactId>
-	<version>1.5.1-SNAPSHOT</version>
+	<version>1.5.2-SNAPSHOT</version>
 	<inceptionYear>2014</inceptionYear>
 	<packaging>hpi</packaging>
 
@@ -41,18 +41,7 @@
 	</distributionManagement>
 
 	<repositories>
-		<repository>
-			<id>project.local</id>
-			<url>file:${project.basedir}/repo</url>
-			<releases>
-				<enabled>true</enabled>
-				<updatePolicy>always</updatePolicy>
-			</releases>
-			<snapshots>
-				<enabled>true</enabled>
-				<updatePolicy>always</updatePolicy>
-			</snapshots>
-		</repository>
+
 		<repository>
 			<id>repo.jenkins-ci.org</id>
 			<url>http://repo.jenkins-ci.org/public/</url>
@@ -78,8 +67,8 @@
 		<easymock.version>3.2</easymock.version>
 		<slf4j.version>1.7.7</slf4j.version>
 		<commons.validator.version>1.4.0</commons.validator.version>
-        <animal.sniffer.annotations>1.9</animal.sniffer.annotations>
-		<threadfix-cli.version>2.0</threadfix-cli.version>
+		<animal.sniffer.annotations>1.9</animal.sniffer.annotations>
+		<threadfix-cli.version>2.2.0</threadfix-cli.version>
 	</properties>
 
 	<build>
@@ -141,11 +130,11 @@
 			<artifactId>commons-validator</artifactId>
 			<version>${commons.validator.version}</version>
 		</dependency>
-        <dependency>
-            <groupId>org.codehaus.mojo</groupId>
-            <artifactId>animal-sniffer-annotations</artifactId>
-            <version>${animal.sniffer.annotations}</version>
-        </dependency>
+		<dependency>
+			<groupId>org.codehaus.mojo</groupId>
+			<artifactId>animal-sniffer-annotations</artifactId>
+			<version>${animal.sniffer.annotations}</version>
+		</dependency>
 		<dependency>
 			<groupId>com.denimgroup.threadfix</groupId>
 			<artifactId>threadfix-cli</artifactId>
