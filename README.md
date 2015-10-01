@@ -1,6 +1,6 @@
 ### Note ###
 - This plugin is not maintained by *Denim Group*
-- Plugin version 1.0 supports ThreadFix versions 1.0 and 2.0. 
+- Plugin version 1.0 supports ThreadFix versions 1.0 and 2.x. 
 
 ### Features ###
 - Upload any supported scan file(s) from your Jenkins Slave/Master to your ThreadFix web server using your ThreadFix API Keys.
@@ -20,4 +20,4 @@ A [ThreadFix server](http://www.threadfix.org/download/) deployment with an *API
 MIT License (MIT)
 
 ### Contact ###
-otto _[at]_ automationdomination _[dot]_ me
+brandon _[at]_ automationdomination _[dot]_ me
