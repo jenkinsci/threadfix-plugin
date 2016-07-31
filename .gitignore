@@ -6,6 +6,7 @@ threadfix-cli.log
 # IntelliJ files #
 ##################
 .idea
+*.iml
 
 # Eclipse files #
 #################
