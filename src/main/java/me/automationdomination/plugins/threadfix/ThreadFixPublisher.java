@@ -22,17 +22,13 @@ import java.io.Serializable;
 
 import javax.servlet.ServletException;
 
-import me.automationdomination.plugins.threadfix.service.UnixEnvironmentVariableParsingService;
-import me.automationdomination.plugins.threadfix.service.EnvironmentVariableParsingService;
 import me.automationdomination.plugins.threadfix.service.ThreadFixService;
-import me.automationdomination.plugins.threadfix.service.WindowsEnvironmentVariableParsingService;
 import me.automationdomination.plugins.threadfix.validation.ApacheCommonsUrlValidator;
 import me.automationdomination.plugins.threadfix.validation.ApiKeyStringValidator;
 import me.automationdomination.plugins.threadfix.validation.ConfigurationValueValidator;
 import me.automationdomination.plugins.threadfix.validation.SimpleStringValidator;
 import net.sf.json.JSONObject;
 
-import org.apache.commons.lang3.SystemUtils;
 import org.apache.commons.validator.routines.IntegerValidator;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
@@ -86,17 +82,8 @@ public class ThreadFixPublisher extends Recorder implements Serializable {
 
         // TODO: validate that environment was retrieved?
         final EnvVars envVars = build.getEnvironment(listener);
-
-        EnvironmentVariableParsingService envService;
-        if (SystemUtils.IS_OS_WINDOWS) {
-            log("Detected Windows OS", out);
-            envService = new WindowsEnvironmentVariableParsingService();
-        } else {
-            log("Detected Non-Windows OS", out);
-            envService = new UnixEnvironmentVariableParsingService();
-        }
-
-        final String parsedScanFile = envService.parse(envVars, scanFile);
+        final String parsedScanFile = envVars.expand(scanFile);
+		log("Expanded scan: " + parsedScanFile, out);
         final FilePath filePath = new FilePath(build.getWorkspace(), parsedScanFile);
 
         if (!filePath.exists())
