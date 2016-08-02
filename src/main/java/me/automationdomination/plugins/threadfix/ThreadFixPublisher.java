@@ -60,16 +60,6 @@ public class ThreadFixPublisher extends Recorder implements Serializable {
 
         log("Starting ThreadFix publisher execution", out);
 
-        log("Parameter Application ID: " + appId, out);
-        validateApplicationId(appId);
-
-        log("Parameter Scan File: " + scanFile, out);
-        final EnvVars envVars = build.getEnvironment(listener);
-        final String expandedScanFilePath = envVars.expand(scanFile);
-        log("Expanded Scan File: " + expandedScanFilePath, out);
-        final FilePath filePath = new FilePath(build.getWorkspace(), expandedScanFilePath);
-        validateFilePathExists(filePath);
-
         log("Retrieving global configurations", out);
         final DescriptorImpl descriptor = this.getDescriptor();
         descriptor.validateToken();
@@ -83,6 +73,18 @@ public class ThreadFixPublisher extends Recorder implements Serializable {
         final String token = descriptor.getToken();
 
         final ThreadFixService threadFixService = new ThreadFixService(threadFixServerUrl, token);
+
+        log("Parameter Application ID: " + appId, out);
+        validateApplicationId(appId);
+
+        log("Parameter Scan File: " + scanFile, out);
+
+        final EnvVars envVars = build.getEnvironment(listener);
+        final String expandedScanFilePath = envVars.expand(scanFile);
+        log("Expanded Scan File: " + expandedScanFilePath, out);
+        final FilePath filePath = new FilePath(build.getWorkspace(), expandedScanFilePath);
+        validateFilePathExists(filePath);
+
         final boolean success = this.uploadScanFile(launcher, threadFixService, filePath);
         return success;
     }
