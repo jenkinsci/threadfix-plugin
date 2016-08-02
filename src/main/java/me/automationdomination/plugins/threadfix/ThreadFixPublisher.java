@@ -48,6 +48,8 @@ public class ThreadFixPublisher extends Recorder implements Serializable {
 
     private static final long serialVersionUID = 3393285563021058327L;
 
+	private final String LOG_FORMAT = "[ThreadFix Publisher] %s";
+
     private static final String appIdErrorTemplate = "app id \"%s\" is invalid";
     private static final String scanFileErrorTemplate = "scan file \"%s\" is invalid or file is unreadable";
 
@@ -69,7 +71,7 @@ public class ThreadFixPublisher extends Recorder implements Serializable {
 	@Override
 	public boolean perform(
 			final AbstractBuild<?, ?> build,
-			final Launcher launcher, 
+			final Launcher launcher,
 			final BuildListener listener) throws InterruptedException, IOException {
 		final PrintStream out = launcher.getListener().getLogger();
 
@@ -91,14 +93,14 @@ public class ThreadFixPublisher extends Recorder implements Serializable {
 
 		log("Using scan file: " + parsedScanFile, out);
 		log("Retrieving global configurations", out);
-		
+
 		final DescriptorImpl descriptor = this.getDescriptor();
 		final String threadFixServerUrl = descriptor.getUrl();
 		final ConfigurationValueValidator threadFixServerUrlValidator = descriptor.getThreadFixServerUrlValidator();
 
 		if (!threadFixServerUrlValidator.isValid(threadFixServerUrl))
 			throw new AbortException(String.format(descriptor.getThreadFixServerUrlErrorTemplate(), threadFixServerUrl));
-		
+
 		log("Using ThreadFix server URL: " + threadFixServerUrl, out);
 
 		// TODO: mask this token in the output?
@@ -143,15 +145,15 @@ public class ThreadFixPublisher extends Recorder implements Serializable {
 		}
 	}
 
-    /**
-     * Log messages to the builds console
-     * @param message The message to log
-     */
-    private void log(String message, PrintStream out) {
-        String outtag = "[ThreadFix] ";
-        message = message.replaceAll("\\n", "\n" + outtag);
-        out.println(outtag + message);
-    }
+	/**
+	 * Log messages to the parameter output stream
+	 *
+	 * @param message
+	 * @param out
+	 */
+	private void log(final String message, final PrintStream out) {
+		out.println(String.format(LOG_FORMAT, message));
+	}
 
 	@Override
 	public DescriptorImpl getDescriptor() {
@@ -176,7 +178,7 @@ public class ThreadFixPublisher extends Recorder implements Serializable {
 	/**
 	 * Descriptor for {@link ThreadFixPublisher}. Used as a singleton. The class
 	 * is marked as public so that it can be accessed from views.
-	 * 
+	 *
 	 * <p>
 	 * See
 	 * <tt>src/main/resources/hudson/me/automationdomination/plugins/threadfix/ThreadFixPublisher/*.jelly</tt>
@@ -184,7 +186,7 @@ public class ThreadFixPublisher extends Recorder implements Serializable {
 	 */
 	@Extension // This indicates to Jenkins that this is an implementation of an extension point.
 	public static final class DescriptorImpl extends BuildStepDescriptor<Publisher> {
-		
+
 		private static final String DISPLAY_NAME = "Publish ThreadFix Scan";
 
 		private static final String URL_PARAMETER = "url";
@@ -193,17 +195,17 @@ public class ThreadFixPublisher extends Recorder implements Serializable {
 		/**
 		 * To persist global configuration information, simply store it in a
 		 * field and call save().
-		 * 
+		 *
 		 * <p>
 		 * If you don't want fields to be persisted, use <tt>transient</tt>.
 		 */
 		private String url;
 		private String token;
-		
+
 		private final ConfigurationValueValidator threadFixServerUrlValidator = new ApacheCommonsUrlValidator();
 		private final ConfigurationValueValidator simpleStringValidator = new SimpleStringValidator();
 		private final ConfigurationValueValidator apiKeyStringValidator = new ApiKeyStringValidator();
-		
+
 		private final String threadFixServerUrlErrorTemplate = "threadfix server url \"%s\" is invalid";
 		private final String tokenErrorTemplate = "threadfix server api key \"%s\" is invalid";
 
@@ -217,7 +219,7 @@ public class ThreadFixPublisher extends Recorder implements Serializable {
 
 		/**
 		 * Performs on-the-fly validation of the form fields 'tfcli'.
-		 * 
+		 *
 		 * @param url
 		 *            This parameter receives the value that the user has typed.
 		 * @return Indicates the outcome of the validation. This is sent to the
@@ -231,7 +233,7 @@ public class ThreadFixPublisher extends Recorder implements Serializable {
 		public FormValidation doCheckUrl(@QueryParameter final String url) throws IOException, ServletException {
 			if (!threadFixServerUrlValidator.isValid(url))
 				return FormValidation.error(String.format(threadFixServerUrlErrorTemplate, url));
-			
+
 			return FormValidation.ok();
 		}
 
@@ -247,9 +249,9 @@ public class ThreadFixPublisher extends Recorder implements Serializable {
         @SuppressWarnings("unused")
 		public FormValidation doTestConnection(@QueryParameter final String url, @QueryParameter final String token) throws IOException, ServletException {
 			final ThreadFixService tfcliService = new ThreadFixService(url, token);
-			
+
 			final RestResponse<Organization[]> getAllTeamsResponse = tfcliService.getAllTeams();
-			
+
 			if (getAllTeamsResponse.success) {
 				return FormValidation.ok("ThreadFix connection success!");
 			} else {
@@ -270,26 +272,26 @@ public class ThreadFixPublisher extends Recorder implements Serializable {
 
 			if (!threadFixServerUrlValidator.isValid(url))
 				throw new FormException(String.format(threadFixServerUrlErrorTemplate, url), URL_PARAMETER);
-			
+
 
 			token = formData.getString(TOKEN_PARAMETER);
 
 			if (!(simpleStringValidator.isValid(token) && apiKeyStringValidator.isValid(token)))
 				throw new FormException(String.format(tokenErrorTemplate, token), TOKEN_PARAMETER);
-			
+
 			save();
-			
+
 			return super.configure(staplerRequest, formData);
 		}
 
         @SuppressWarnings("unused")
 		public ListBoxModel doFillAppIdItems() {
 			final ListBoxModel appIds = new ListBoxModel();
-			
+
 			final ThreadFixService threadFixSErvice = new ThreadFixService(url, token);
-			
+
 			final RestResponse<Organization[]> getAllTeamsResponse = threadFixSErvice.getAllTeams();
-			
+
 			if (getAllTeamsResponse.success) {
 				for (final Organization organization : getAllTeamsResponse.object) {
 					for (final Application application : organization.getActiveApplications()) {
