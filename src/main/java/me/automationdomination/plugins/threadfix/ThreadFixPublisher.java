@@ -29,11 +29,11 @@ import me.automationdomination.plugins.threadfix.service.WindowsEnvironmentVaria
 import me.automationdomination.plugins.threadfix.validation.ApacheCommonsUrlValidator;
 import me.automationdomination.plugins.threadfix.validation.ApiKeyStringValidator;
 import me.automationdomination.plugins.threadfix.validation.ConfigurationValueValidator;
-import me.automationdomination.plugins.threadfix.validation.NumericStringValidator;
 import me.automationdomination.plugins.threadfix.validation.SimpleStringValidator;
 import net.sf.json.JSONObject;
 
 import org.apache.commons.lang3.SystemUtils;
+import org.apache.commons.validator.routines.IntegerValidator;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
@@ -57,7 +57,6 @@ public class ThreadFixPublisher extends Recorder implements Serializable {
 
 	private final String appId;
 	private final String scanFile;
-	private final ConfigurationValueValidator appIdValidator = new NumericStringValidator();
 
 
 	@DataBoundConstructor
@@ -83,8 +82,7 @@ public class ThreadFixPublisher extends Recorder implements Serializable {
         log("Using Application ID: " + appId, out);
         log("Raw scan: " + scanFile, out);
 
-		if (!appIdValidator.isValid(appId))
-			throw new AbortException(String.format(appIdErrorTemplate, appId));
+		validateApplicationId(appId);
 
         // TODO: validate that environment was retrieved?
         final EnvVars envVars = build.getEnvironment(listener);
@@ -141,6 +139,21 @@ public class ThreadFixPublisher extends Recorder implements Serializable {
             log("Scan file upload failed", out);
         }
         return success;
+	}
+
+	/**
+	 * Validate parameter application ID is numeric. If it is not numeric,
+	 * abort by throwing an exception.
+	 *
+	 * @param applicationId
+	 * @throws AbortException
+	 */
+	private void validateApplicationId(final String applicationId) throws AbortException {
+		final Integer value = IntegerValidator.getInstance().validate(applicationId);
+
+		if (value == null) {
+			throw new AbortException(String.format("app id \"%s\" is invalid", appId));
+		}
 	}
 
     /**
