@@ -1,13 +1,13 @@
 package me.automationdomination.plugins.threadfix;
 
-import hudson.AbortException;
-import hudson.EnvVars;
-import hudson.Extension;
-import hudson.FilePath;
-import hudson.Launcher;
-import hudson.model.BuildListener;
+import com.denimgroup.threadfix.data.entities.Application;
+import com.denimgroup.threadfix.data.entities.Organization;
+import com.denimgroup.threadfix.data.entities.Scan;
+import com.denimgroup.threadfix.remote.response.RestResponse;
+import hudson.*;
 import hudson.model.AbstractBuild;
 import hudson.model.AbstractProject;
+import hudson.model.BuildListener;
 import hudson.remoting.Callable;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
@@ -15,29 +15,20 @@ import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
-
-import java.io.IOException;
-import java.io.PrintStream;
-import java.io.Serializable;
-
-import javax.servlet.ServletException;
-
 import me.automationdomination.plugins.threadfix.service.ThreadFixService;
-import me.automationdomination.plugins.threadfix.validation.ApacheCommonsUrlValidator;
-import me.automationdomination.plugins.threadfix.validation.ApiKeyStringValidator;
-import me.automationdomination.plugins.threadfix.validation.ConfigurationValueValidator;
-import me.automationdomination.plugins.threadfix.validation.SimpleStringValidator;
 import net.sf.json.JSONObject;
-
 import org.apache.commons.validator.routines.IntegerValidator;
+import org.apache.commons.validator.routines.UrlValidator;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
 
-import com.denimgroup.threadfix.data.entities.Application;
-import com.denimgroup.threadfix.data.entities.Organization;
-import com.denimgroup.threadfix.data.entities.Scan;
-import com.denimgroup.threadfix.remote.response.RestResponse;
+import javax.servlet.ServletException;
+import java.io.IOException;
+import java.io.PrintStream;
+import java.io.Serializable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created with IntelliJ IDEA. User: bspruth Date: 3/22/14 Time: 12:05 AM To
@@ -92,21 +83,17 @@ public class ThreadFixPublisher extends Recorder implements Serializable {
         log("Retrieving global configurations", out);
 
         final DescriptorImpl descriptor = this.getDescriptor();
+        descriptor.validateToken();
+        descriptor.validateUrl();
         final String threadFixServerUrl = descriptor.getUrl();
-        final ConfigurationValueValidator threadFixServerUrlValidator = descriptor.getThreadFixServerUrlValidator();
 
-        if (!threadFixServerUrlValidator.isValid(threadFixServerUrl))
-            throw new AbortException(String.format(descriptor.getThreadFixServerUrlErrorTemplate(), threadFixServerUrl));
 
         log("Using ThreadFix server URL: " + threadFixServerUrl, out);
 
         // TODO: mask this token in the output?
         // TODO: some kind of error checking whether the command was successful
         final String token = descriptor.getToken();
-        final ConfigurationValueValidator simpleStringValidator = descriptor.getSimpleStringValidator();
-        final ConfigurationValueValidator apiKeyStringValidator = descriptor.getApiKeyStringValidator();
-        if (!(simpleStringValidator.isValid(token) && apiKeyStringValidator.isValid(token)))
-            throw new AbortException(String.format(descriptor.getTokenErrorTemplate(), token));
+
 
         log("Uploading scan file", out);
 
@@ -194,7 +181,7 @@ public class ThreadFixPublisher extends Recorder implements Serializable {
      * <tt>src/main/resources/hudson/me/automationdomination/plugins/threadfix/ThreadFixPublisher/*.jelly</tt>
      * for the actual HTML fragment for the configuration screen.
      */
-    @Extension // This indicates to Jenkins that this is an implementation of an extension point.
+    @Extension
     public static final class DescriptorImpl extends BuildStepDescriptor<Publisher> {
 
         private static final String DISPLAY_NAME = "Publish ThreadFix Scan";
@@ -202,64 +189,72 @@ public class ThreadFixPublisher extends Recorder implements Serializable {
         private static final String URL_PARAMETER = "url";
         private static final String TOKEN_PARAMETER = "token";
 
-        /**
-         * To persist global configuration information, simply store it in a
-         * field and call save().
-         * <p>
-         * <p>
-         * If you don't want fields to be persisted, use <tt>transient</tt>.
-         */
+        private static final String THREAD_FIX_SERVER_URL_ERROR_FORMAT = "threadfix server url \"%s\" is invalid";
+        private static final String THREAD_FIX_TOKEN_ERROR_FORMAT = "threadfix server api token \"%s\" is invalid";
+
+        private static final String API_TOKEN_PATTERN = "^[A-Za-z0-9]{40,}$";
+
+        private final UrlValidator urlValidator = new UrlValidator(new String[]{"http", "https"}, UrlValidator.ALLOW_LOCAL_URLS);
+        private final Pattern apiTokenPattern = Pattern.compile(API_TOKEN_PATTERN);
+
         private String url;
         private String token;
 
-        private final ConfigurationValueValidator threadFixServerUrlValidator = new ApacheCommonsUrlValidator();
-        private final ConfigurationValueValidator simpleStringValidator = new SimpleStringValidator();
-        private final ConfigurationValueValidator apiKeyStringValidator = new ApiKeyStringValidator();
-
-        private final String threadFixServerUrlErrorTemplate = "threadfix server url \"%s\" is invalid";
-        private final String tokenErrorTemplate = "threadfix server api key \"%s\" is invalid";
-
         /**
-         * In order to load the persisted global configuration, you have to call
-         * load() in the constructor.
+         * Default constructor.
+         * Calls load() to load persisted global configuration.
          */
         public DescriptorImpl() {
             load();
         }
 
         /**
-         * Performs on-the-fly validation of the form fields 'tfcli'.
+         * Performs on-the-fly validation of the ThreadFix server URL parameter
          *
-         * @param url This parameter receives the value that the user has typed.
-         * @return Indicates the outcome of the validation. This is sent to the
-         * browser.
-         * <p>
-         * Note that returning {@link FormValidation#error(String)} does
-         * not prevent the form from being saved. It just means that a
-         * message will be displayed to the user.
+         * @param url
+         * @return
+         * @throws IOException
+         * @throws ServletException
          */
-        @SuppressWarnings("unused")
         public FormValidation doCheckUrl(@QueryParameter final String url) throws IOException, ServletException {
-            if (!threadFixServerUrlValidator.isValid(url))
-                return FormValidation.error(String.format(threadFixServerUrlErrorTemplate, url));
-
-            return FormValidation.ok();
+            if (!isUrlValid(url)) {
+                return FormValidation.error(String.format(THREAD_FIX_SERVER_URL_ERROR_FORMAT, url));
+            } else {
+                return FormValidation.ok();
+            }
         }
 
-        @SuppressWarnings("unused")
+        /**
+         * Performs on-the-fly validation of the ThreadFix api token parameter
+         *
+         * @param token
+         * @return
+         * @throws IOException
+         * @throws ServletException
+         */
         public FormValidation doCheckToken(@QueryParameter final String token) throws IOException, ServletException {
-
-            if (!(simpleStringValidator.isValid(token) && apiKeyStringValidator.isValid(token)))
-                return FormValidation.error(String.format(tokenErrorTemplate, token));
-
-            return FormValidation.ok();
+            if (!isApiTokenValid(token)) {
+                return FormValidation.error(String.format(THREAD_FIX_TOKEN_ERROR_FORMAT, token));
+            } else {
+                return FormValidation.ok();
+            }
         }
 
-        @SuppressWarnings("unused")
+        /**
+         * Performs an on-the-fly check of the ThreadFix url and api token
+         * parameters by making a simple call to the server and validating
+         * the response code.
+         *
+         * @param url
+         * @param token
+         * @return
+         * @throws IOException
+         * @throws ServletException
+         */
         public FormValidation doTestConnection(@QueryParameter final String url, @QueryParameter final String token) throws IOException, ServletException {
-            final ThreadFixService tfcliService = new ThreadFixService(url, token);
+            final ThreadFixService threadFixService = new ThreadFixService(url, token);
 
-            final RestResponse<Organization[]> getAllTeamsResponse = tfcliService.getAllTeams();
+            final RestResponse<Organization[]> getAllTeamsResponse = threadFixService.getAllTeams();
 
             if (getAllTeamsResponse.success) {
                 return FormValidation.ok("ThreadFix connection success!");
@@ -268,38 +263,57 @@ public class ThreadFixPublisher extends Recorder implements Serializable {
             }
         }
 
+        /**
+         * Returns true to indicate that this builder can be used with all
+         * project types
+         *
+         * @param jobType
+         * @return
+         */
         @Override
-        public boolean isApplicable(@SuppressWarnings("rawtypes") final Class<? extends AbstractProject> jobType) {
-            // Indicates that this builder can be used with all kinds of project
-            // types applicable to all project types
+        public boolean isApplicable(final Class<? extends AbstractProject> jobType) {
             return true;
         }
 
+        /**
+         * Validate and save configuration parameters
+         *
+         * @param staplerRequest
+         * @param formData
+         * @return
+         * @throws FormException
+         */
         @Override
         public boolean configure(final StaplerRequest staplerRequest, final JSONObject formData) throws FormException {
             url = formData.getString(URL_PARAMETER);
 
-            if (!threadFixServerUrlValidator.isValid(url))
-                throw new FormException(String.format(threadFixServerUrlErrorTemplate, url), URL_PARAMETER);
-
+            if (!isUrlValid(url)) {
+                throw new FormException(String.format(THREAD_FIX_SERVER_URL_ERROR_FORMAT, url), URL_PARAMETER);
+            }
 
             token = formData.getString(TOKEN_PARAMETER);
 
-            if (!(simpleStringValidator.isValid(token) && apiKeyStringValidator.isValid(token)))
-                throw new FormException(String.format(tokenErrorTemplate, token), TOKEN_PARAMETER);
+            if (!isApiTokenValid(token)) {
+                throw new FormException(String.format(THREAD_FIX_TOKEN_ERROR_FORMAT, token), TOKEN_PARAMETER);
+            }
 
             save();
 
             return super.configure(staplerRequest, formData);
         }
 
-        @SuppressWarnings("unused")
+        /**
+         * Retrieve the teams and applications to populate the application I
+         * dropdown
+         *
+         * @return
+         */
         public ListBoxModel doFillAppIdItems() {
             final ListBoxModel appIds = new ListBoxModel();
 
-            final ThreadFixService threadFixSErvice = new ThreadFixService(url, token);
+            final ThreadFixService threadFixService = new ThreadFixService(url, token);
 
-            final RestResponse<Organization[]> getAllTeamsResponse = threadFixSErvice.getAllTeams();
+            final RestResponse<Organization[]> getAllTeamsResponse = threadFixService.getAllTeams();
 
             if (getAllTeamsResponse.success) {
                 for (final Organization organization : getAllTeamsResponse.object) {
@@ -322,32 +336,75 @@ public class ThreadFixPublisher extends Recorder implements Serializable {
             return DISPLAY_NAME;
         }
 
+        /**
+         * Returns true if the url format appears correct
+         *
+         * @param url
+         * @return
+         */
+        private boolean isUrlValid(final String url) {
+            return urlValidator.isValid(url);
+        }
+
+        /**
+         * Just in case a bad configuration value was saved, this method can be
+         * called to validate the ThreadFix URL
+         *
+         * @throws AbortException
+         */
+        private void validateUrl() throws AbortException {
+            if (!isUrlValid(url)) {
+                throw new AbortException(String.format(THREAD_FIX_SERVER_URL_ERROR_FORMAT, url));
+            }
+        }
+
+        /**
+         * Returns true if the API token format appears correct
+         *
+         * @param apiToken
+         * @return
+         */
+        private boolean isApiTokenValid(final String apiToken) {
+            if (apiToken == null) {
+                return false;
+            }
+
+            if (apiToken.isEmpty()) {
+                return false;
+            }
+
+            final Matcher matcher = apiTokenPattern.matcher(apiToken);
+            return matcher.matches();
+        }
+
+        /**
+         * Just in case a bad configuration value was saved, this method can be
+         * called to validate the ThreadFix API token parameter
+         *
+         * @throws AbortException
+         */
+        private void validateToken() throws AbortException {
+            if (!isApiTokenValid(token)) {
+                throw new AbortException(String.format(THREAD_FIX_TOKEN_ERROR_FORMAT, token));
+            }
+        }
+
+        /**
+         * Returns the configured ThreadFix URL
+         *
+         * @return
+         */
         public String getUrl() {
             return url;
         }
 
+        /**
+         * Returns the configured ThreadFix API token
+         *
+         * @return
+         */
         public String getToken() {
             return token;
-        }
-
-        public ConfigurationValueValidator getThreadFixServerUrlValidator() {
-            return threadFixServerUrlValidator;
-        }
-
-        public ConfigurationValueValidator getSimpleStringValidator() {
-            return simpleStringValidator;
-        }
-
-        public ConfigurationValueValidator getApiKeyStringValidator() {
-            return apiKeyStringValidator;
-        }
-
-        public String getThreadFixServerUrlErrorTemplate() {
-            return threadFixServerUrlErrorTemplate;
-        }
-
-        public String getTokenErrorTemplate() {
-            return tokenErrorTemplate;
         }
 
     }
