@@ -1,6 +1,3 @@
-<!--
-  This view is used to render the installed plugins page.
--->
-<div>
-        ThreadFix Plugin, publish scan results in Project page and uploads scan artifact to ThreadFix server.
-</div>
+<p>
+    ThreadFix Plugin, publish scan results in Project page and uploads scan artifact to ThreadFix server.
+</p>

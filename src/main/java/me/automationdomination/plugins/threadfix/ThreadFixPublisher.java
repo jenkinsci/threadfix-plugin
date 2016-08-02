@@ -2,7 +2,6 @@ package me.automationdomination.plugins.threadfix;
 
 import com.denimgroup.threadfix.data.entities.Application;
 import com.denimgroup.threadfix.data.entities.Organization;
-import com.denimgroup.threadfix.data.entities.Scan;
 import com.denimgroup.threadfix.remote.response.RestResponse;
 import hudson.*;
 import hudson.model.AbstractBuild;
@@ -27,6 +26,7 @@ import javax.servlet.ServletException;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.io.Serializable;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -40,12 +40,12 @@ public class ThreadFixPublisher extends Recorder implements Serializable {
     private final String LOG_FORMAT = "[ThreadFix Publisher] %s";
 
     private final String appId;
-    private final String scanFile;
+    private final List<ScanFile> scanFiles;
 
     @DataBoundConstructor
-    public ThreadFixPublisher(final String appId, final String scanFile) {
+    public ThreadFixPublisher(final String appId, final List<ScanFile> scanFiles) {
         this.appId = appId;
-        this.scanFile = scanFile;
+        this.scanFiles = scanFiles;
     }
 
     /**
@@ -74,11 +74,20 @@ public class ThreadFixPublisher extends Recorder implements Serializable {
 
         final ThreadFixService threadFixService = new ThreadFixService(threadFixServerUrl, token);
 
-        log("Parameter Application ID: " + appId, out);
+        log("Parameter application ID: " + appId, out);
         validateApplicationId(appId);
 
-        final boolean success = uploadScanFile(build, launcher, listener, threadFixService, scanFile);
-        return success;
+        log(String.format("Uploading %d scan files", scanFiles.size()), out);
+
+        int failCount = 0;
+
+        for (final ScanFile scanFile : scanFiles) {
+            if (!uploadScanFile(build, launcher, listener, threadFixService, scanFile.getPath())) {
+                failCount++;
+            }
+        }
+
+        return failCount == 0;
     }
 
     /**
@@ -139,22 +148,18 @@ public class ThreadFixPublisher extends Recorder implements Serializable {
             final String scanFile) throws IOException, InterruptedException {
         final PrintStream out = launcher.getListener().getLogger();
 
-        log("Parameter Scan File: " + scanFile, out);
-
+        log("Parameter scan file: " + scanFile, out);
         final EnvVars envVars = build.getEnvironment(listener);
         final String expandedScanFilePath = envVars.expand(scanFile);
-        log("Expanded Scan File: " + expandedScanFilePath, out);
-
         final FilePath filePath = new FilePath(build.getWorkspace(), expandedScanFilePath);
         validateFilePathExists(filePath);
 
-        log(String.format("Uploading Scan File: %s", filePath), out);
+        log(String.format("Uploading scan file: %s", filePath), out);
 
         // Node agnostic execution of ThreadFix upload service
         final boolean success = launcher.getChannel().call(new Callable<Boolean, IOException>() {
             public Boolean call() throws IOException {
-                final RestResponse<Scan> uploadFileResponse = threadFixService.uploadFile(appId, filePath);
-                return uploadFileResponse.success;
+                return threadFixService.uploadFile(appId, filePath);
             }
         });
 
@@ -202,9 +207,11 @@ public class ThreadFixPublisher extends Recorder implements Serializable {
      *
      * @return
      */
-    public String getScanFile() {
-        return scanFile;
+    public List<ScanFile> getScanFiles() {
+        return scanFiles;
     }
+
+
 
     /**
      * Descriptor for {@link ThreadFixPublisher}. Used as a singleton. The class
@@ -223,8 +230,8 @@ public class ThreadFixPublisher extends Recorder implements Serializable {
         private static final String URL_PARAMETER = "url";
         private static final String TOKEN_PARAMETER = "token";
 
-        private static final String THREAD_FIX_SERVER_URL_ERROR_FORMAT = "threadfix server url \"%s\" is invalid";
-        private static final String THREAD_FIX_TOKEN_ERROR_FORMAT = "threadfix server api token \"%s\" is invalid";
+        private static final String THREAD_FIX_SERVER_URL_ERROR_FORMAT = "ThreadFix server URL \"%s\" is invalid";
+        private static final String THREAD_FIX_TOKEN_ERROR_FORMAT = "ThreadFix server API token \"%s\" is invalid";
 
         private static final String API_TOKEN_PATTERN = "^[A-Za-z0-9]{40,}$";
 
@@ -291,7 +298,7 @@ public class ThreadFixPublisher extends Recorder implements Serializable {
             final RestResponse<Organization[]> getAllTeamsResponse = threadFixService.getAllTeams();
 
             if (getAllTeamsResponse.success) {
-                return FormValidation.ok("ThreadFix connection success!");
+                return FormValidation.ok("ThreadFix server connection successful!");
             } else {
                 return FormValidation.error("Unable to connect to ThreadFix server");
             }
