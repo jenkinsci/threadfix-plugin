@@ -50,12 +50,8 @@ public class ThreadFixPublisher extends Recorder implements Serializable {
 
     private final String LOG_FORMAT = "[ThreadFix Publisher] %s";
 
-    private static final String appIdErrorTemplate = "app id \"%s\" is invalid";
-    private static final String scanFileErrorTemplate = "scan file \"%s\" is invalid or file is unreadable";
-
     private final String appId;
     private final String scanFile;
-
 
     @DataBoundConstructor
     public ThreadFixPublisher(final String appId, final String scanFile) {
@@ -75,23 +71,24 @@ public class ThreadFixPublisher extends Recorder implements Serializable {
             final BuildListener listener) throws InterruptedException, IOException {
         final PrintStream out = launcher.getListener().getLogger();
 
-        log("Starting ThreadFix publisher execution", out);
-        log("Raw Application ID: " + appId, out);
-        log("Using Application ID: " + appId, out);
-        log("Raw scan: " + scanFile, out);
 
+        log("Starting ThreadFix publisher execution", out);
+
+
+        log("Parameter Application ID: " + appId, out);
         validateApplicationId(appId);
 
-        // TODO: validate that environment was retrieved?
+
+        log("Parameter Scan File: " + scanFile, out);
+
         final EnvVars envVars = build.getEnvironment(listener);
-        final String parsedScanFile = envVars.expand(scanFile);
-        log("Expanded scan: " + parsedScanFile, out);
-        final FilePath filePath = new FilePath(build.getWorkspace(), parsedScanFile);
+        final String expandedScanFilePath = envVars.expand(scanFile);
+        log("Expanded Scan File: " + expandedScanFilePath, out);
 
-        if (!filePath.exists())
-            throw new AbortException(String.format(scanFileErrorTemplate, scanFile));
+        final FilePath filePath = new FilePath(build.getWorkspace(), expandedScanFilePath);
+        validateFilePathExists(filePath);
 
-        log("Using scan file: " + parsedScanFile, out);
+
         log("Retrieving global configurations", out);
 
         final DescriptorImpl descriptor = this.getDescriptor();
@@ -141,7 +138,20 @@ public class ThreadFixPublisher extends Recorder implements Serializable {
         final Integer value = IntegerValidator.getInstance().validate(applicationId);
 
         if (value == null) {
-            throw new AbortException(String.format("app id \"%s\" is invalid", appId));
+            throw new AbortException(String.format("application id \"%s\" is invalid", appId));
+        }
+    }
+
+    /**
+     * Validate parameter file path exists. If it does not exist, abort by
+     * throwing an excpetion.
+     *
+     * @param filePath
+     * @throws AbortException
+     */
+    private void validateFilePathExists(final FilePath filePath) throws IOException, InterruptedException {
+        if (!filePath.exists()) {
+            throw new AbortException(String.format("scan file \"%s\" is invalid or file is unreadable", filePath));
         }
     }
 
