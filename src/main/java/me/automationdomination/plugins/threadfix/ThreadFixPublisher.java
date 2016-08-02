@@ -77,15 +77,7 @@ public class ThreadFixPublisher extends Recorder implements Serializable {
         log("Parameter Application ID: " + appId, out);
         validateApplicationId(appId);
 
-        log("Parameter Scan File: " + scanFile, out);
-
-        final EnvVars envVars = build.getEnvironment(listener);
-        final String expandedScanFilePath = envVars.expand(scanFile);
-        log("Expanded Scan File: " + expandedScanFilePath, out);
-        final FilePath filePath = new FilePath(build.getWorkspace(), expandedScanFilePath);
-        validateFilePathExists(filePath);
-
-        final boolean success = this.uploadScanFile(launcher, threadFixService, filePath);
+        final boolean success = uploadScanFile(build, launcher, listener, threadFixService, scanFile);
         return success;
     }
 
@@ -130,18 +122,31 @@ public class ThreadFixPublisher extends Recorder implements Serializable {
     /**
      * Uploads the parameter scan file via the parameter ThreadFixService
      *
+     * @param build
      * @param launcher
+     * @param listener
      * @param threadFixService
-     * @param filePath
+     * @param scanFile
      * @return
      * @throws IOException
      * @throws InterruptedException
      */
     public boolean uploadScanFile(
+            final AbstractBuild<?, ?> build,
             final Launcher launcher,
+            final BuildListener listener,
             final ThreadFixService threadFixService,
-            final FilePath filePath) throws IOException, InterruptedException {
+            final String scanFile) throws IOException, InterruptedException {
         final PrintStream out = launcher.getListener().getLogger();
+
+        log("Parameter Scan File: " + scanFile, out);
+
+        final EnvVars envVars = build.getEnvironment(listener);
+        final String expandedScanFilePath = envVars.expand(scanFile);
+        log("Expanded Scan File: " + expandedScanFilePath, out);
+
+        final FilePath filePath = new FilePath(build.getWorkspace(), expandedScanFilePath);
+        validateFilePathExists(filePath);
 
         log(String.format("Uploading Scan File: %s", filePath), out);
 
