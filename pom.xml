@@ -1,94 +1,97 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation=" http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                             http://maven.apache.org/maven-v4_0_0.xsd">
 
-	<modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
 
-	<parent>
-		<!-- which version of Jenkins is this plugin built against? -->
-		<groupId>org.jenkins-ci.plugins</groupId>
-		<artifactId>plugin</artifactId>
-		<version>1.560</version>
-	</parent>
+    <parent>
+        <!-- which version of Jenkins is this plugin built against? -->
+        <groupId>org.jenkins-ci.plugins</groupId>
+        <artifactId>plugin</artifactId>
+        <version>1.560</version>
+    </parent>
 
-	<artifactId>threadfix</artifactId>
-	<version>1.5.3-SNAPSHOT</version>
-	<inceptionYear>2014</inceptionYear>
-	<packaging>hpi</packaging>
+    <artifactId>threadfix</artifactId>
+    <version>1.5.3-SNAPSHOT</version>
+    <inceptionYear>2014</inceptionYear>
+    <packaging>hpi</packaging>
 
-	<name>ThreadFix Plugin</name>
-	<description>Uploads any supported ThreadFix scan file to your ThreadFix server</description>
-	<url>http://wiki.jenkins-ci.org/display/JENKINS/Threadfix+Plugin</url>
-	
-	<licenses>
-		<license>
-			<name>The MIT license</name>
-			<url>https://github.com/automationdomination</url>
-			<distribution>repo</distribution>
-		</license>
-	</licenses>
+    <name>ThreadFix Plugin</name>
+    <description>Uploads any supported ThreadFix scan file to your ThreadFix server</description>
+    <url>http://wiki.jenkins-ci.org/display/JENKINS/Threadfix+Plugin</url>
 
-	<scm>
-		<connection>scm:git:git://github.com/jenkinsci/${project.artifactId}-plugin.git</connection>
-		<developerConnection>scm:git:git@github.com:jenkinsci/${project.artifactId}-plugin.git</developerConnection>
-		<url>http://github.com/jenkinsci/${project.artifactId}-plugin</url>
-		<tag>HEAD</tag>
-	</scm>
-	
-	<distributionManagement>
-		<repository>
-			<id>maven.jenkins-ci.org</id>
-			<url>http://maven.jenkins-ci.org/content/repositories/releases/</url>
-		</repository>
-	</distributionManagement>
+    <licenses>
+        <license>
+            <name>The MIT license</name>
+            <url>https://github.com/automationdomination</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
 
-	<repositories>
+    <scm>
+        <connection>scm:git:git://github.com/jenkinsci/${project.artifactId}-plugin.git</connection>
+        <developerConnection>scm:git:git@github.com:jenkinsci/${project.artifactId}-plugin.git</developerConnection>
+        <url>http://github.com/jenkinsci/${project.artifactId}-plugin</url>
+        <tag>HEAD</tag>
+    </scm>
 
-		<repository>
-			<id>repo.jenkins-ci.org</id>
-			<url>http://repo.jenkins-ci.org/public/</url>
-		</repository>
-	</repositories>
+    <distributionManagement>
+        <repository>
+            <id>maven.jenkins-ci.org</id>
+            <url>http://maven.jenkins-ci.org/content/repositories/releases/</url>
+        </repository>
+    </distributionManagement>
 
-	<developers>
-		<developer>
-			<id>automationdomination</id>
-			<name>Brandon Spruth</name>
-			<email>brandon@automationdomination.me</email>
-		</developer>
-		<developer>
-			<id>cbaek</id>
-			<name>Christopher Baek</name>
-			<email>christopher.baek@gmail.com</email>
-		</developer>
-	</developers>
+    <repositories>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<junit.version>4.11</junit.version>
-		<easymock.version>3.2</easymock.version>
-		<slf4j.version>1.7.7</slf4j.version>
-		<commons.validator.version>1.4.0</commons.validator.version>
-		<animal.sniffer.annotations>1.9</animal.sniffer.annotations>
-		<threadfix-cli.version>2.2.0</threadfix-cli.version>
-	</properties>
+        <repository>
+            <id>repo.jenkins-ci.org</id>
+            <url>http://repo.jenkins-ci.org/public/</url>
+        </repository>
+    </repositories>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.1</version><!--$NO-MVN-MAN-VER$ -->
-				<configuration>
-					<source>1.7</source>
-					<target>1.7</target>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-release-plugin</artifactId>
-				<version>2.5</version><!--$NO-MVN-MAN-VER$ -->
-			</plugin>
-		</plugins>
-	<pluginManagement>
+    <developers>
+        <developer>
+            <id>automationdomination</id>
+            <name>Brandon Spruth</name>
+            <email>brandon@automationdomination.me</email>
+        </developer>
+        <developer>
+            <id>cbaek</id>
+            <name>Christopher Baek</name>
+            <email>christopher.baek@gmail.com</email>
+        </developer>
+    </developers>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <junit.version>4.11</junit.version>
+        <easymock.version>3.2</easymock.version>
+        <slf4j.version>1.7.7</slf4j.version>
+        <commons.validator.version>1.4.0</commons.validator.version>
+        <animal.sniffer.annotations>1.9</animal.sniffer.annotations>
+        <threadfix-cli.version>2.2.0</threadfix-cli.version>
+    </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.1</version><!--$NO-MVN-MAN-VER$ -->
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>2.5</version><!--$NO-MVN-MAN-VER$ -->
+            </plugin>
+        </plugins>
+        <pluginManagement>
             <plugins>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -104,42 +107,42 @@
                 </plugin>
             </plugins>
         </pluginManagement>
-	</build>
+    </build>
 
-	<dependencies>
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>${junit.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.easymock</groupId>
-			<artifactId>easymock</artifactId>
-			<version>${easymock.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>${slf4j.version}</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>commons-validator</groupId>
-			<artifactId>commons-validator</artifactId>
-			<version>${commons.validator.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.codehaus.mojo</groupId>
-			<artifactId>animal-sniffer-annotations</artifactId>
-			<version>${animal.sniffer.annotations}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.denimgroup.threadfix</groupId>
-			<artifactId>threadfix-cli</artifactId>
-			<version>${threadfix-cli.version}</version>
-		</dependency>
-	</dependencies>
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.easymock</groupId>
+            <artifactId>easymock</artifactId>
+            <version>${easymock.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>${slf4j.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>commons-validator</groupId>
+            <artifactId>commons-validator</artifactId>
+            <version>${commons.validator.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>animal-sniffer-annotations</artifactId>
+            <version>${animal.sniffer.annotations}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.denimgroup.threadfix</groupId>
+            <artifactId>threadfix-cli</artifactId>
+            <version>${threadfix-cli.version}</version>
+        </dependency>
+    </dependencies>
 
 </project>
