@@ -31,10 +31,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Created with IntelliJ IDEA. User: bspruth Date: 3/22/14 Time: 12:05 AM To
- * change this template use File | Settings | File Templates.
+ * ThreadFix Plugin, publish scan results in Project page and uploads scan artifact to ThreadFix server.
  */
-@SuppressWarnings("unused")
 public class ThreadFixPublisher extends Recorder implements Serializable {
 
     private static final long serialVersionUID = 3393285563021058327L;
@@ -51,9 +49,7 @@ public class ThreadFixPublisher extends Recorder implements Serializable {
     }
 
     /**
-     * This is what will be executed when the job is build. This also shows how
-     * you can use listener and build. Will be seen in the jenkins Console
-     * output
+     * This is what will be executed when the job is build.
      */
     @Override
     public boolean perform(
@@ -62,56 +58,43 @@ public class ThreadFixPublisher extends Recorder implements Serializable {
             final BuildListener listener) throws InterruptedException, IOException {
         final PrintStream out = launcher.getListener().getLogger();
 
-
         log("Starting ThreadFix publisher execution", out);
-
 
         log("Parameter Application ID: " + appId, out);
         validateApplicationId(appId);
 
-
         log("Parameter Scan File: " + scanFile, out);
-
         final EnvVars envVars = build.getEnvironment(listener);
         final String expandedScanFilePath = envVars.expand(scanFile);
         log("Expanded Scan File: " + expandedScanFilePath, out);
-
         final FilePath filePath = new FilePath(build.getWorkspace(), expandedScanFilePath);
         validateFilePathExists(filePath);
 
-
         log("Retrieving global configurations", out);
-
         final DescriptorImpl descriptor = this.getDescriptor();
         descriptor.validateToken();
         descriptor.validateUrl();
+
         final String threadFixServerUrl = descriptor.getUrl();
-
-
         log("Using ThreadFix server URL: " + threadFixServerUrl, out);
 
         // TODO: mask this token in the output?
         // TODO: some kind of error checking whether the command was successful
         final String token = descriptor.getToken();
 
-
-        log("Uploading scan file", out);
-
-        // Node agnostic execution of ThreadFix upload service
-        boolean success = launcher.getChannel().call(new Callable<Boolean, IOException>() {
-            public Boolean call() throws IOException {
-                final ThreadFixService tfcliService = new ThreadFixService(threadFixServerUrl, token);
-                final RestResponse<Scan> uploadFileResponse = tfcliService.uploadFile(appId, filePath);
-                return uploadFileResponse.success;
-            }
-        });
-
-        if (success) {
-            log("Scan file uploaded successfully!", out);
-        } else {
-            log("Scan file upload failed", out);
-        }
+        final ThreadFixService threadFixService = new ThreadFixService(threadFixServerUrl, token);
+        final boolean success = this.uploadScanFile(launcher, threadFixService, filePath);
         return success;
+    }
+
+    /**
+     * Log messages to the parameter output stream
+     *
+     * @param message
+     * @param out
+     */
+    private void log(final String message, final PrintStream out) {
+        out.println(String.format(LOG_FORMAT, message));
     }
 
     /**
@@ -143,31 +126,75 @@ public class ThreadFixPublisher extends Recorder implements Serializable {
     }
 
     /**
-     * Log messages to the parameter output stream
+     * Uploads the parameter scan file via the parameter ThreadFixService
      *
-     * @param message
-     * @param out
+     * @param launcher
+     * @param threadFixService
+     * @param filePath
+     * @return
+     * @throws IOException
+     * @throws InterruptedException
      */
-    private void log(final String message, final PrintStream out) {
-        out.println(String.format(LOG_FORMAT, message));
+    public boolean uploadScanFile(
+            final Launcher launcher,
+            final ThreadFixService threadFixService,
+            final FilePath filePath) throws IOException, InterruptedException {
+        final PrintStream out = launcher.getListener().getLogger();
+
+        log(String.format("Uploading Scan File: %s", filePath), out);
+
+        // Node agnostic execution of ThreadFix upload service
+        final boolean success = launcher.getChannel().call(new Callable<Boolean, IOException>() {
+            public Boolean call() throws IOException {
+                final RestResponse<Scan> uploadFileResponse = threadFixService.uploadFile(appId, filePath);
+                return uploadFileResponse.success;
+            }
+        });
+
+        if (success) {
+            log("Scan file uploaded successfully!", out);
+        } else {
+            log("Scan file upload failed", out);
+        }
+
+        return success;
     }
 
+    /**
+     * Returns the {@link ThreadFixPublisher} descriptor. This doesn't do
+     * anything special other than casting the return value for convenience.
+     *
+     * @return
+     */
     @Override
     public DescriptorImpl getDescriptor() {
         return (DescriptorImpl) super.getDescriptor();
     }
 
+    /**
+     * Returns NONE since this is not dependent on the last step
+     *
+     * @return
+     */
     @Override
     public BuildStepMonitor getRequiredMonitorService() {
-        return BuildStepMonitor.NONE; // NONE since this is not dependent on the last step
+        return BuildStepMonitor.NONE;
     }
 
-    @SuppressWarnings("unused")
+    /**
+     * Returns the configured application ID
+     *
+     * @return
+     */
     public String getAppId() {
         return appId;
     }
 
-    @SuppressWarnings("unused")
+    /**
+     * Returns the configured scan file
+     *
+     * @return
+     */
     public String getScanFile() {
         return scanFile;
     }
