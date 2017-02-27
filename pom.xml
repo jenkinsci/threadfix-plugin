@@ -6,7 +6,7 @@
         <!-- which version of Jenkins is this plugin built against? -->
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>1.560</version>
+        <version>1.580.1</version>
     </parent>
 
     <artifactId>threadfix</artifactId>
