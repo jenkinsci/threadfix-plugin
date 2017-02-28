@@ -3,17 +3,23 @@ package me.automationdomination.plugins.threadfix;
 import com.denimgroup.threadfix.data.entities.Application;
 import com.denimgroup.threadfix.data.entities.Organization;
 import com.denimgroup.threadfix.remote.response.RestResponse;
-import hudson.*;
-import hudson.model.AbstractBuild;
+import hudson.AbortException;
+import hudson.EnvVars;
+import hudson.Extension;
+import hudson.FilePath;
+import hudson.Launcher;
 import hudson.model.AbstractProject;
-import hudson.model.BuildListener;
-import hudson.remoting.Callable;
+import hudson.model.Result;
+import hudson.model.Run;
+import hudson.model.TaskListener;
 import hudson.tasks.BuildStepDescriptor;
 import hudson.tasks.BuildStepMonitor;
 import hudson.tasks.Publisher;
 import hudson.tasks.Recorder;
 import hudson.util.FormValidation;
 import hudson.util.ListBoxModel;
+import jenkins.security.MasterToSlaveCallable;
+import jenkins.tasks.SimpleBuildStep;
 import me.automationdomination.plugins.threadfix.service.ThreadFixService;
 import net.sf.json.JSONObject;
 import org.apache.commons.validator.routines.IntegerValidator;
@@ -21,7 +27,7 @@ import org.apache.commons.validator.routines.UrlValidator;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.StaplerRequest;
-
+import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.io.PrintStream;
@@ -33,7 +39,7 @@ import java.util.regex.Pattern;
 /**
  * ThreadFix Plugin, publish scan results in Project page and uploads scan artifact to ThreadFix server.
  */
-public class ThreadFixPublisher extends Recorder implements Serializable {
+public class ThreadFixPublisher extends Recorder implements SimpleBuildStep, Serializable {
 
     private static final long serialVersionUID = 3393285563021058327L;
 
@@ -52,10 +58,11 @@ public class ThreadFixPublisher extends Recorder implements Serializable {
      * This is what will be executed when the job is build.
      */
     @Override
-    public boolean perform(
-            final AbstractBuild<?, ?> build,
-            final Launcher launcher,
-            final BuildListener listener) throws InterruptedException, IOException {
+    public void perform(
+            @Nonnull final Run<?, ?> build,
+            @Nonnull final FilePath workspace,
+            @Nonnull final Launcher launcher,
+            @Nonnull final TaskListener listener) throws InterruptedException, IOException {
         final PrintStream out = launcher.getListener().getLogger();
 
         log("Starting ThreadFix publisher execution", out);
@@ -82,12 +89,16 @@ public class ThreadFixPublisher extends Recorder implements Serializable {
         int failCount = 0;
 
         for (final ScanFile scanFile : scanFiles) {
-            if (!uploadScanFile(build, launcher, listener, threadFixService, scanFile.getPath())) {
+            if (!uploadScanFile(build, workspace, launcher, listener, threadFixService, scanFile.getPath())) {
                 failCount++;
             }
         }
 
-        return failCount == 0;
+        if (failCount == 0) {
+            build.setResult(Result.SUCCESS);
+        } else {
+            build.setResult(Result.FAILURE);
+        }
     }
 
     /**
@@ -132,6 +143,7 @@ public class ThreadFixPublisher extends Recorder implements Serializable {
      * Uploads the parameter scan file via the parameter ThreadFixService
      *
      * @param build
+     * @param workspace
      * @param launcher
      * @param listener
      * @param threadFixService
@@ -141,9 +153,10 @@ public class ThreadFixPublisher extends Recorder implements Serializable {
      * @throws InterruptedException
      */
     public boolean uploadScanFile(
-            final AbstractBuild<?, ?> build,
+            final Run<?, ?> build,
+            final FilePath workspace,
             final Launcher launcher,
-            final BuildListener listener,
+            final TaskListener listener,
             final ThreadFixService threadFixService,
             final String scanFile) throws IOException, InterruptedException {
         final PrintStream out = launcher.getListener().getLogger();
@@ -151,13 +164,13 @@ public class ThreadFixPublisher extends Recorder implements Serializable {
         log("Parameter scan file: " + scanFile, out);
         final EnvVars envVars = build.getEnvironment(listener);
         final String expandedScanFilePath = envVars.expand(scanFile);
-        final FilePath filePath = new FilePath(build.getWorkspace(), expandedScanFilePath);
+        final FilePath filePath = new FilePath(workspace, expandedScanFilePath);
         validateFilePathExists(filePath);
 
         log(String.format("Uploading scan file: %s", filePath), out);
 
         // Node agnostic execution of ThreadFix upload service
-        final boolean success = launcher.getChannel().call(new Callable<Boolean, IOException>() {
+        final boolean success = launcher.getChannel().call(new MasterToSlaveCallable<Boolean, IOException>() {
             public Boolean call() throws IOException {
                 return threadFixService.uploadFile(appId, filePath);
             }
