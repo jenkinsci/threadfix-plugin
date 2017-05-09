@@ -6,7 +6,7 @@
         <!-- which version of Jenkins is this plugin built against? -->
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>1.580.1</version>
+        <version>2.5</version>
     </parent>
 
     <artifactId>threadfix</artifactId>
@@ -65,6 +65,7 @@
         <commons.validator.version>1.4.0</commons.validator.version>
         <animal.sniffer.annotations>1.9</animal.sniffer.annotations>
         <threadfix-cli.version>2.2.0</threadfix-cli.version>
+        <findbugs.skip>true</findbugs.skip>
     </properties>
 
     <build>
