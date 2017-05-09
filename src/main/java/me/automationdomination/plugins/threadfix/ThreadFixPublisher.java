@@ -1,5 +1,15 @@
 package me.automationdomination.plugins.threadfix;
 
+import java.io.*;
+import java.util.*;
+import java.util.regex.*;
+import javax.annotation.*;
+import javax.servlet.*;
+import org.apache.commons.validator.routines.IntegerValidator;
+import org.apache.commons.validator.routines.UrlValidator;
+import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.StaplerRequest;
 import com.denimgroup.threadfix.data.entities.Application;
 import com.denimgroup.threadfix.data.entities.Organization;
 import com.denimgroup.threadfix.remote.response.RestResponse;
@@ -22,19 +32,6 @@ import jenkins.security.MasterToSlaveCallable;
 import jenkins.tasks.SimpleBuildStep;
 import me.automationdomination.plugins.threadfix.service.ThreadFixService;
 import net.sf.json.JSONObject;
-import org.apache.commons.validator.routines.IntegerValidator;
-import org.apache.commons.validator.routines.UrlValidator;
-import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.StaplerRequest;
-import javax.annotation.Nonnull;
-import javax.servlet.ServletException;
-import java.io.IOException;
-import java.io.PrintStream;
-import java.io.Serializable;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * ThreadFix Plugin, publish scan results in Project page and uploads scan artifact to ThreadFix server.
@@ -58,11 +55,8 @@ public class ThreadFixPublisher extends Recorder implements SimpleBuildStep, Ser
      * This is what will be executed when the job is build.
      */
     @Override
-    public void perform(
-            @Nonnull final Run<?, ?> build,
-            @Nonnull final FilePath workspace,
-            @Nonnull final Launcher launcher,
-            @Nonnull final TaskListener listener) throws InterruptedException, IOException {
+    public void perform(@Nonnull final Run<?, ?> build, @Nonnull final FilePath workspace, @Nonnull final Launcher launcher,
+                        @Nonnull final TaskListener listener) throws InterruptedException, IOException {
         final PrintStream out = launcher.getListener().getLogger();
 
         log("Starting ThreadFix publisher execution", out);
@@ -79,8 +73,6 @@ public class ThreadFixPublisher extends Recorder implements SimpleBuildStep, Ser
         // TODO: some kind of error checking whether the command was successful
         final String token = descriptor.getToken();
 
-        final ThreadFixService threadFixService = new ThreadFixService(threadFixServerUrl, token);
-
         log("Parameter application ID: " + appId, out);
         validateApplicationId(appId);
 
@@ -89,7 +81,7 @@ public class ThreadFixPublisher extends Recorder implements SimpleBuildStep, Ser
         int failCount = 0;
 
         for (final ScanFile scanFile : scanFiles) {
-            if (!uploadScanFile(build, workspace, launcher, listener, threadFixService, scanFile.getPath())) {
+            if (!uploadScanFile(build, workspace, launcher, listener, scanFile.getPath(), threadFixServerUrl, token)) {
                 failCount++;
             }
         }
@@ -146,19 +138,13 @@ public class ThreadFixPublisher extends Recorder implements SimpleBuildStep, Ser
      * @param workspace
      * @param launcher
      * @param listener
-     * @param threadFixService
      * @param scanFile
      * @return
      * @throws IOException
      * @throws InterruptedException
      */
-    public boolean uploadScanFile(
-            final Run<?, ?> build,
-            final FilePath workspace,
-            final Launcher launcher,
-            final TaskListener listener,
-            final ThreadFixService threadFixService,
-            final String scanFile) throws IOException, InterruptedException {
+    public boolean uploadScanFile(final Run<?, ?> build, final FilePath workspace, final Launcher launcher, final TaskListener listener, final String scanFile,
+                                  String threadFixServerUrl, String token) throws IOException, InterruptedException {
         final PrintStream out = launcher.getListener().getLogger();
 
         log("Parameter scan file: " + scanFile, out);
@@ -170,11 +156,7 @@ public class ThreadFixPublisher extends Recorder implements SimpleBuildStep, Ser
         log(String.format("Uploading scan file: %s", filePath), out);
 
         // Node agnostic execution of ThreadFix upload service
-        final boolean success = launcher.getChannel().call(new MasterToSlaveCallable<Boolean, IOException>() {
-            public Boolean call() throws IOException {
-                return threadFixService.uploadFile(appId, filePath);
-            }
-        });
+        final boolean success = launcher.getChannel().call(new ThreadFixFileUploadCallable(appId, threadFixServerUrl, token, filePath));
 
         if (success) {
             log("Scan file uploaded successfully!", out);
@@ -223,8 +205,6 @@ public class ThreadFixPublisher extends Recorder implements SimpleBuildStep, Ser
     public List<ScanFile> getScanFiles() {
         return scanFiles;
     }
-
-
 
     /**
      * Descriptor for {@link ThreadFixPublisher}. Used as a singleton. The class
@@ -460,7 +440,25 @@ public class ThreadFixPublisher extends Recorder implements SimpleBuildStep, Ser
         public String getToken() {
             return token;
         }
-
     }
 
+    private final class ThreadFixFileUploadCallable extends MasterToSlaveCallable<Boolean, IOException> {
+        private final String appId;
+        private final String threadFixServerUrl;
+        private final String token;
+        private final FilePath filePath;
+
+        private ThreadFixFileUploadCallable(String appId, String threadFixServerUrl, String token, FilePath filePath) {
+            this.appId = appId;
+            this.threadFixServerUrl = threadFixServerUrl;
+            this.token = token;
+            this.filePath = filePath;
+        }
+
+        @Override
+        public Boolean call() throws IOException {
+            ThreadFixService threadFixService = new ThreadFixService(threadFixServerUrl, token);
+            return threadFixService.uploadFile(appId, filePath);
+        }
+    }
 }

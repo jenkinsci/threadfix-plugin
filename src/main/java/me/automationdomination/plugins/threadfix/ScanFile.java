@@ -1,17 +1,18 @@
 package me.automationdomination.plugins.threadfix;
 
+import java.io.*;
+import org.kohsuke.stapler.DataBoundConstructor;
+import org.kohsuke.stapler.QueryParameter;
 import hudson.Extension;
 import hudson.model.AbstractDescribableImpl;
 import hudson.model.Descriptor;
 import hudson.util.FormValidation;
-import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.QueryParameter;
 
 /**
  * An artifact that can be uploaded to a ThreadFix server for an
  * application
  */
-public final class ScanFile extends AbstractDescribableImpl<ScanFile> {
+public final class ScanFile extends AbstractDescribableImpl<ScanFile> implements Serializable {
 
     private final String path;
 
@@ -57,7 +58,5 @@ public final class ScanFile extends AbstractDescribableImpl<ScanFile> {
                 return FormValidation.ok();
             }
         }
-
     }
-
 }
