@@ -33,13 +33,6 @@
         <tag>HEAD</tag>
     </scm>
 
-    <distributionManagement>
-        <repository>
-            <id>maven.jenkins-ci.org</id>
-            <url>https://maven.jenkins-ci.org/content/repositories/releases/</url>
-        </repository>
-    </distributionManagement>
-
     <repositories>
         <repository>
             <id>repo.jenkins-ci.org</id>
