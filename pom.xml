@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>threadfix</artifactId>
-    <version>1.5.5-SNAPSHOT</version>
+    <version>1.5.4-SNAPSHOT</version>
     <inceptionYear>2014</inceptionYear>
     <packaging>hpi</packaging>
 
