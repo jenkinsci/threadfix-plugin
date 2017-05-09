@@ -10,7 +10,7 @@
     </parent>
 
     <artifactId>threadfix</artifactId>
-    <version>1.5.4-SNAPSHOT</version>
+    <version>1.5.4</version>
     <inceptionYear>2014</inceptionYear>
     <packaging>hpi</packaging>
 
@@ -30,7 +30,7 @@
         <connection>scm:git:ssh://github.com/jenkinsci/${project.artifactId}-plugin.git</connection>
         <developerConnection>scm:git:ssh://git@github.com/jenkinsci/${project.artifactId}-plugin.git</developerConnection>
         <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
-        <tag>HEAD</tag>
+        <tag>threadfix-1.5.4</tag>
     </scm>
 
     <distributionManagement>
