@@ -16,7 +16,7 @@
 
     <name>ThreadFix Plugin</name>
     <description>Uploads any supported ThreadFix scan file to your ThreadFix server</description>
-    <url>http://wiki.jenkins-ci.org/display/JENKINS/Threadfix+Plugin</url>
+    <url>https://wiki.jenkins-ci.org/display/JENKINS/Threadfix+Plugin</url>
 
     <licenses>
         <license>
@@ -36,14 +36,14 @@
     <distributionManagement>
         <repository>
             <id>maven.jenkins-ci.org</id>
-            <url>http://maven.jenkins-ci.org/content/repositories/releases/</url>
+            <url>https://maven.jenkins-ci.org/content/repositories/releases/</url>
         </repository>
     </distributionManagement>
 
     <repositories>
         <repository>
             <id>repo.jenkins-ci.org</id>
-            <url>http://repo.jenkins-ci.org/public/</url>
+            <url>https://repo.jenkins-ci.org/public/</url>
         </repository>
     </repositories>
 
