@@ -228,8 +228,9 @@ public class ThreadFixPublisher extends Recorder implements SimpleBuildStep, Ser
 
         private static final String API_TOKEN_PATTERN = "^[A-Za-z0-9]{40,}$";
 
-        private final UrlValidator urlValidator = new UrlValidator(new String[]{"http", "https"}, UrlValidator.ALLOW_LOCAL_URLS);
-        private final Pattern apiTokenPattern = Pattern.compile(API_TOKEN_PATTERN);
+        private transient final UrlValidator urlValidator = new UrlValidator(new String[]{"http", "https"}, UrlValidator.ALLOW_LOCAL_URLS);
+
+        private transient final Pattern apiTokenPattern = Pattern.compile(API_TOKEN_PATTERN);
 
         private String url;
         private String token;
